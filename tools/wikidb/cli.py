@@ -31,6 +31,27 @@ def _s3():
                         aws_session_token=os.environ.get("AWS_SESSION_TOKEN") or None)
 
 
+def cmd_bootstrap(args) -> int:
+    """Create a local administrator account (break-glass admin or wikidb-robot), run as superadmin once (U4)."""
+    client = XWikiClient(setting("WIKIDB_URL"), "superadmin", setting("SUPERADMIN_PASSWORD"))
+    password = setting(args.password_setting)
+    user = PageRef(("XWiki",), args.user)
+    if not client.page_exists(user):
+        client.put_page(user, args.user, hidden=True)
+    if not client.list_objects(user, "XWiki.XWikiUsers"):
+        client.add_object(user, "XWiki.XWikiUsers", {"first_name": args.user, "active": "1", "email": "",
+                                                    "password": password})
+    else:
+        number = client.list_objects(user, "XWiki.XWikiUsers")[0].number
+        client.update_object(user, "XWiki.XWikiUsers", number, {"password": password, "active": "1"})
+    admins = PageRef(("XWiki",), "XWikiAdminGroup")
+    members = {o.properties.get("member") for o in client.list_objects(admins, provision.GROUPS_CLASS)}
+    if f"XWiki.{args.user}" not in members:
+        client.add_object(admins, provision.GROUPS_CLASS, {"member": f"XWiki.{args.user}"})
+    print(f"XWiki.{args.user} is a local administrator")
+    return 0
+
+
 def cmd_provision(args) -> int:
     client = XWikiClient.from_settings()
     bureaux = provision.read_registry(client)
@@ -122,6 +143,10 @@ def cmd_check_fresh(args) -> int:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="wikidb")
     sub = parser.add_subparsers(dest="command", required=True)
+    p = sub.add_parser("bootstrap", help="create a local admin account as superadmin (first deployment only)")
+    p.add_argument("user", help="account name, e.g. wikidb-robot or the break-glass admin")
+    p.add_argument("--password-setting", default="WIKIDB_ROBOT_PASSWORD",
+                   help="setting holding the new account's password (environment or /secrets/app)")
     sub.add_parser("provision", help="apply the bureau registry: groups, spaces, rights")
     p = sub.add_parser("hrsync", help="sync GroupeDirection and bureau groups from the newest HR listing")
     p.add_argument("--prefix", default="listings/")
@@ -136,7 +161,7 @@ def main(argv=None) -> int:
     p.add_argument("--prefix")
     p.add_argument("--max-age-hours", type=int, default=48)
     args = parser.parse_args(argv)
-    return {"provision": cmd_provision, "hrsync": cmd_hrsync, "import": cmd_import, "backup": cmd_backup,
+    return {"bootstrap": cmd_bootstrap, "provision": cmd_provision, "hrsync": cmd_hrsync, "import": cmd_import, "backup": cmd_backup,
             "check-fresh": cmd_check_fresh}[args.command](args)
 
 

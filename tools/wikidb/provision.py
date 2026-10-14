@@ -19,6 +19,7 @@ GLOBAL_RIGHTS_CLASS = "XWiki.XWikiGlobalRights"
 PREFERENCES_CLASS = "XWiki.XWikiPreferences"
 WIKI_PREFERENCES = PageRef(("XWiki",), "XWikiPreferences")
 ADMINS = "XWiki.XWikiAdminGroup"
+ALL_USERS = "XWiki.XWikiAllGroup"
 
 SECTEUR = "secteur"
 SYNTHESE = "synthese"
@@ -205,6 +206,15 @@ def apply(client: XWikiClient, state: TargetState, existing_bureau_spaces: list[
             client.put_page(space.home, space.title)
             changes.append(f"created space {'.'.join(space.spaces)}")
         _set_space_rules(client, space, changes)
+
+    # Every registered user is in XWikiAllGroup, including ProConnect users absent from the HR listing. The Standard
+    # flavor allows it edit (which implies view) at wiki level; remove any such grant so GroupeDirection is the only
+    # way in (R6, R17).
+    for obj in client.list_objects(WIKI_PREFERENCES, GLOBAL_RIGHTS_CLASS):
+        rule = Rule.from_properties(obj.properties)
+        if rule and ALL_USERS in rule.groups:
+            client.delete_object(WIKI_PREFERENCES, GLOBAL_RIGHTS_CLASS, obj.number)
+            changes.append(f"wiki: removed {','.join(rule.levels)} granted to {ALL_USERS}")
 
     present_rules = {Rule.from_properties(o.properties)
                      for o in client.list_objects(WIKI_PREFERENCES, GLOBAL_RIGHTS_CLASS)}

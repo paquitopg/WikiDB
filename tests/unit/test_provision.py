@@ -104,3 +104,15 @@ def test_registry_rejects_unknown_type_and_duplicate_codes():
         Bureau("C", "Bureau C", "autre")
     with pytest.raises(ValueError):
         target_state([A, Bureau("A", "Doublon", "secteur")])
+
+
+def test_flavor_grant_to_every_registered_user_is_removed_so_unlisted_users_get_nothing():
+    wiki = wiki_with_flavor()
+    # The Standard flavor allows edit (which implies view) to every registered user.
+    wiki.seed_object("XWiki.XWikiPreferences", GLOBAL_RIGHTS_CLASS,
+                     {"groups": "XWiki.XWikiAllGroup", "users": "", "levels": "edit,comment", "allow": "1"})
+    report = apply(wiki, target_state([A]))
+    wiki_rules = {Rule.from_properties(p) for p in wiki.objs("XWiki.XWikiPreferences", GLOBAL_RIGHTS_CLASS)}
+    assert not any("XWiki.XWikiAllGroup" in r.groups for r in wiki_rules if r)
+    assert any("XWikiAllGroup" in c for c in report.changes)
+    assert apply(wiki, target_state([A])).changes == []

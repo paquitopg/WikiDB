@@ -123,12 +123,14 @@ class XWikiClient:
         return {p["name"]: p.get("value") or "" for p in r.json().get("properties", [])}
 
     def add_object(self, page: PageRef, class_name: str, properties: dict[str, str]) -> None:
-        form = {"className": class_name, **{f"property#{k}": v for k, v in properties.items()}}
-        self._check(self.session.post(f"{self.base}{page.path()}/objects", data=form), 200, 201)
+        # JSON bodies: form-encoded writes need XWiki's CSRF form token.
+        body = {"className": class_name, "properties": [{"name": k, "value": v} for k, v in properties.items()]}
+        self._check(self.session.post(f"{self.base}{page.path()}/objects", json=body), 200, 201)
 
     def update_object(self, page: PageRef, class_name: str, number: int, properties: dict[str, str]) -> None:
-        form = {f"property#{k}": v for k, v in properties.items()}
-        self._check(self.session.put(f"{self.base}{page.path()}/objects/{class_name}/{number}", data=form),
+        body = {"className": class_name, "number": number,
+                "properties": [{"name": k, "value": v} for k, v in properties.items()]}
+        self._check(self.session.put(f"{self.base}{page.path()}/objects/{class_name}/{number}", json=body),
                     200, 202)
 
     def delete_object(self, page: PageRef, class_name: str, number: int) -> None:
