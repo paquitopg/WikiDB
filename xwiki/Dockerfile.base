@@ -26,6 +26,14 @@ RUN set -eux; \
   printf 'distribution.defaultUI=fr.finances.budget.wikidb:wikidb-mainwiki/%s\n' "$WIKIDB_REVISION" \
     >> "$WEBINF/xwiki.properties"
 
+# Stamp the WAR with WikiDB's own distribution id and the build revision. XWiki reruns its distribution job only when
+# this identity changes, and that job is what installs or upgrades the default UI on startup (KTD3).
+RUN set -eux; \
+  XED=/usr/local/tomcat/webapps/ROOT/META-INF/extension.xed; \
+  sed -i -e '0,/<id>[^<]*<\/id>/s##<id>fr.finances.budget.wikidb:wikidb-distribution</id>#' \
+         -e "0,/<version>[^<]*<\/version>/s##<version>${WIKIDB_REVISION}</version>#" "$XED"; \
+  grep -q "<version>${WIKIDB_REVISION}</version>" "$XED"
+
 COPY entrypoint-wikidb.sh /usr/local/bin/entrypoint-wikidb.sh
 
 LABEL org.opencontainers.image.title="wikidb" \

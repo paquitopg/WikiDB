@@ -33,6 +33,28 @@
     <module>mainwiki</module>
     <module>xip</module>
   </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- Write the concrete ${revision} into the POMs: the XIP descriptors are generated from them, and an
+             unresolved revision would pin the application dependency to the default version. -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>1.7.3</version>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals><goal>flatten</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <repositories>
     <repository>
       <id>xwiki-releases</id>
