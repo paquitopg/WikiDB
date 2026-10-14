@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels: {{- include "wikidb.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  # XWiki is not clustered here and the volume is ReadWriteOnce: never run two pods at once.
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {{- include "wikidb.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "wikidb.labels" . | nindent 8 }}
+    spec:
+      securityContext:
+        fsGroup: 0
+      containers:
+        - name: xwiki
+          image: {{ include "wikidb.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - {name: http, containerPort: 8080}
+          env:
+            - {name: DB_HOST, value: {{ required "postgresql.host is required" .Values.postgresql.host | quote }}}
+            - {name: DB_PORT, value: {{ .Values.postgresql.port | quote }}}
+            - name: DB_DATABASE
+              valueFrom: {secretKeyRef: {name: {{ required "postgresql.secretName is required" .Values.postgresql.secretName }}, key: dbname}}
+            - name: DB_USER
+              valueFrom: {secretKeyRef: {name: {{ .Values.postgresql.secretName }}, key: username}}
+            - name: DB_PASSWORD
+              valueFrom: {secretKeyRef: {name: {{ .Values.postgresql.secretName }}, key: password}}
+            - {name: OIDC_DISCOVERY_URL, value: {{ .Values.oidc.discoveryUrl | quote }}}
+            - {name: JAVA_OPTS, value: {{ include "wikidb.javaOpts" . | quote }}}
+          volumeMounts:
+            - {name: data, mountPath: /usr/local/xwiki}
+            - {name: app-secrets, mountPath: /secrets/app, readOnly: true}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          # XWiki answers 202 while it initializes, and the first start installs the default UI.
+          startupProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: {path: /rest/, port: http}
+            periodSeconds: 15
+            timeoutSeconds: 10
+          livenessProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 30
+            failureThreshold: 5
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: {{ .Release.Name }}-data}
+        - name: app-secrets
+          secret:
+            secretName: {{ .Values.appSecret }}
+            defaultMode: 0400
+            optional: true
