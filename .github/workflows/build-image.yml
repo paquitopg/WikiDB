@@ -41,7 +41,12 @@ jobs:
 
       - name: Build XIP
         working-directory: xwiki
-        run: ./mvnw -B -ntp package -Drevision=${{ steps.rev.outputs.revision }}
+        timeout-minutes: 30
+        # Transfer progress stays off, but each download is logged so a slow repository is visible.
+        run: >
+          ./mvnw -B -ntp package -Drevision=${{ steps.rev.outputs.revision }}
+          -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=info
+          -Daether.connector.http.connectionMaxTtl=60 -Daether.connector.requestTimeout=60000
 
       - uses: docker/login-action@v3
         with:
