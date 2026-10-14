@@ -1,0 +1,7 @@
+# Applied on top of the WAR's WEB-INF/xwiki.cfg at image build (see apply-overrides.sh).
+# Agents sign in through ProConnect (KTD9); local accounts remain for break-glass and tooling.
+xwiki.authentication.authclass=org.xwiki.contrib.oidc.auth.OIDCAuthServiceImpl
+# Attachments, their history and their recycle bin live in PostgreSQL (KTD4).
+xwiki.store.attachment.hint=hibernate
+xwiki.store.attachment.versioning.hint=hibernate
+xwiki.store.attachment.recyclebin.hint=hibernate

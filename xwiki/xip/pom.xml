@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>fr.finances.budget.wikidb</groupId>
+    <artifactId>wikidb-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>wikidb-xip</artifactId>
+  <packaging>xip</packaging>
+  <name>WikiDB - Offline Extension Package</name>
+  <description>Every extension the wiki installs at runtime, so production never reaches an extension repository</description>
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>wikidb-mainwiki</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-extension-plugin</artifactId>
+        <version>${commons.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <coreExtensions>
+            <!-- Exclude what the WAR already provides -->
+            <coreExtension>
+              <groupId>org.xwiki.platform</groupId>
+              <artifactId>xwiki-platform-distribution-war-dependencies</artifactId>
+              <version>${platform.version}</version>
+              <type>pom</type>
+            </coreExtension>
+          </coreExtensions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

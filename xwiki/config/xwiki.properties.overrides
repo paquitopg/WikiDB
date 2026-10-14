@@ -1,0 +1,29 @@
+# Applied on top of the WAR's WEB-INF/xwiki.properties at image build (see apply-overrides.sh).
+# ${env:NAME} values are resolved by XWiki's configuration layer when it starts.
+
+# No remote extension repository: everything ships in the bundled XIP (KTD3).
+extension.repositories=
+extension.versioncheck.environment.enabled=false
+# Install or upgrade the default UI without the wizard; distribution.defaultUI is appended by the image build.
+distribution.job.interactive=false
+distribution.job.interactive.wiki=false
+
+# Local logins (break-glass and tooling accounts): captcha, then disable the account (KTD12).
+security.authentication.failureStrategy=captcha,disableAccount
+security.authentication.maxAuthorizedAttempts=3
+security.authentication.timeWindowAttempts=300
+
+# ProConnect (KTD9). One client per platform; values come from the deployment.
+# Keep local logins (REST basic auth for wikidb-robot, break-glass admin); agents still go through ProConnect.
+oidc.tryLocal=true
+oidc.endpoint.discovery=${env:OIDC_DISCOVERY_URL}
+oidc.clientid=${env:OIDC_CLIENT_ID}
+oidc.secret=${env:OIDC_SECRET}
+oidc.scope=openid,email,given_name,usual_name
+oidc.userinfoclaims=email,given_name,usual_name
+oidc.user.mapping=first_name=${oidc.user.givenName},last_name=${oidc.user.usual_name}
+# User page name = lowercased email with every non [a-z0-9] character replaced by "-".
+# tools/wikidb computes the same name for the HR sync; keep both in step.
+oidc.user.nameFormater=${oidc.user.mail._lowerCase._clean}
+oidc.user.nameForbiddenPattern=[^a-z0-9]
+oidc.user.nameForbiddenReplacement=-
