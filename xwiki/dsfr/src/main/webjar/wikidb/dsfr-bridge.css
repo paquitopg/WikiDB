@@ -1,27 +1,29 @@
 /*
  * WikiDB bridge between XWiki (Flamingo, Bootstrap 3) and the DSFR (DSFR plan KTD4).
- * Loaded after the DSFR stylesheets, so its rules win. Fix clashes here, never in the DSFR files.
+ * XWiki inserts it after the DSFR stylesheets but before Flamingo's style.css and CSS variables, so every rule is
+ * prefixed with "html body" (or "html:root") to outrank Flamingo whatever the order. Fix clashes here, never in the
+ * DSFR files.
  * Colours and spacing use the DSFR's own tokens (CSS custom properties from dist/core).
  */
 
 /* ---- Header: XWiki's tools (search, notifications, user menu, drawer) inside the DSFR header (U2) ---- */
 
-#menuview {
+html body #menuview {
   background: none;
 }
 
-.fr-header__body-row {
+html body .fr-header__body-row {
   flex-wrap: wrap;
 }
 
-.fr-header .wikidb-xwikitools {
+html body .fr-header .wikidb-xwikitools {
   align-items: center;
   display: flex;
   margin-left: auto;
   padding: 0 1rem;
 }
 
-.fr-header .wikidb-xwikitools .navbar-nav {
+html body .fr-header .wikidb-xwikitools .navbar-nav {
   align-items: center;
   display: flex;
   float: none;
@@ -30,34 +32,49 @@
   padding: 0;
 }
 
-.fr-header .wikidb-xwikitools .navbar-nav > li {
+html body .fr-header .wikidb-xwikitools .navbar-nav > li {
   float: none;
   padding: 0;
   position: relative;
 }
 
-.fr-header .wikidb-xwikitools .navbar-nav > li > a,
-.fr-header .wikidb-xwikitools .navbar-nav > li > button,
-.fr-header .wikidb-xwikitools .icon-navbar {
+html body .fr-header .wikidb-xwikitools .navbar-nav > li > a,
+html body .fr-header .wikidb-xwikitools .navbar-nav > li > button,
+html body .fr-header .wikidb-xwikitools .icon-navbar {
   background: none;
   color: var(--text-action-high-blue-france);
   min-height: 2.5rem;
   padding: 0.5rem 0.75rem;
 }
 
-.fr-header .wikidb-xwikitools .navbar-nav > li > a:hover,
-.fr-header .wikidb-xwikitools .navbar-nav > li > button:hover {
+html body .fr-header .wikidb-xwikitools .navbar-nav > li > a:hover,
+html body .fr-header .wikidb-xwikitools .navbar-nav > li > button:hover {
   background-color: var(--background-default-grey-hover);
 }
 
-.fr-header .wikidb-xwikitools .dropdown-menu {
+html body .fr-header__service a,
+html body .fr-footer__brand a {
+  color: var(--text-title-grey);
+}
+
+/* Flamingo colours the top-bar buttons through #xwikimainmenu, which the tools area keeps for XWiki's scripts. */
+html body #xwikimainmenu .btn,
+html body #xwikimainmenu button,
+html body #xwikimainmenu #globalsearch .btn,
+html body #xwikimainmenu .dropdown-toggle {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--text-action-high-blue-france);
+}
+
+html body .fr-header .wikidb-xwikitools .dropdown-menu {
   left: auto;
   right: 0;
 }
 
 /* ---- Flamingo's CSS variables, which also reach the editor and administration screens (U3, R4) ---- */
 
-:root {
+html:root {
   --font-family-base: Marianne, arial, sans-serif;
   --font-family-sans-serif: Marianne, arial, sans-serif;
   --text-color: var(--text-default-grey);
@@ -77,63 +94,63 @@
   --border-radius-large: 0;
 }
 
-body,
-button,
-input,
-select,
-textarea,
-.btn {
+html body,
+html body button,
+html body input,
+html body select,
+html body textarea,
+html body .btn {
   font-family: Marianne, arial, sans-serif;
 }
 
 /* ---- Buttons: primary and secondary DSFR buttons ---- */
 
-.btn {
+html body .btn {
   border-radius: 0;
   font-weight: 500;
 }
 
-.btn-primary,
-.btn-primary:focus {
+html body .btn-primary,
+html body .btn-primary:focus {
   background-color: var(--background-action-high-blue-france);
   border-color: var(--background-action-high-blue-france);
   color: var(--text-inverted-blue-france);
 }
 
-.btn-primary:hover,
-.btn-primary:active {
+html body .btn-primary:hover,
+html body .btn-primary:active {
   background-color: var(--background-action-high-blue-france-hover);
   border-color: var(--background-action-high-blue-france-hover);
   color: var(--text-inverted-blue-france);
 }
 
-.btn-default {
+html body .btn-default {
   background-color: var(--background-default-grey);
   border-color: var(--border-action-high-blue-france);
   color: var(--text-action-high-blue-france);
 }
 
-.btn-default:hover,
-.btn-default:active {
+html body .btn-default:hover,
+html body .btn-default:active {
   background-color: var(--background-default-grey-hover);
   color: var(--text-action-high-blue-france);
 }
 
 /* ---- Forms: the .xform layout of the measure, procedure, glossary and directory sheets ---- */
 
-.xform dt label {
+html body .xform dt label {
   color: var(--text-label-grey);
   font-weight: 700;
 }
 
-.xform input[type="text"],
-.xform input[type="date"],
-.xform input[type="number"],
-.xform select,
-.xform textarea,
-input.form-control,
-select.form-control,
-textarea.form-control {
+html body .xform input[type="text"],
+html body .xform input[type="date"],
+html body .xform input[type="number"],
+html body .xform select,
+html body .xform textarea,
+html body input.form-control,
+html body select.form-control,
+html body textarea.form-control {
   background-color: var(--background-contrast-grey);
   border: 0;
   border-radius: 0.25rem 0.25rem 0 0;
@@ -141,25 +158,25 @@ textarea.form-control {
   color: var(--text-default-grey);
 }
 
-.xform input:focus,
-.xform select:focus,
-.xform textarea:focus,
-.form-control:focus {
+html body .xform input:focus,
+html body .xform select:focus,
+html body .xform textarea:focus,
+html body .form-control:focus {
   outline: 2px solid #0a76f6;
   outline-offset: 2px;
 }
 
-.xHint {
+html body .xHint {
   color: var(--text-mention-grey);
   font-size: 0.75rem;
 }
 
 /* ---- Message boxes ({{success}}, {{warning}}, {{error}}, {{info}}) drawn as DSFR alerts ---- */
 
-.box.successmessage,
-.box.warningmessage,
-.box.errormessage,
-.box.infomessage {
+html body .box.successmessage,
+html body .box.warningmessage,
+html body .box.errormessage,
+html body .box.infomessage {
   background-image: none;
   border: 1px solid;
   border-left-width: 0.5rem;
@@ -168,39 +185,39 @@ textarea.form-control {
   padding: 0.75rem 1rem;
 }
 
-.box.successmessage {
+html body .box.successmessage {
   background-color: var(--background-contrast-success);
   border-color: var(--border-plain-success);
 }
 
-.box.warningmessage {
+html body .box.warningmessage {
   background-color: var(--background-contrast-warning);
   border-color: var(--border-plain-warning);
 }
 
-.box.errormessage {
+html body .box.errormessage {
   background-color: var(--background-contrast-error);
   border-color: var(--border-plain-error);
 }
 
-.box.infomessage {
+html body .box.infomessage {
   background-color: var(--background-contrast-info);
   border-color: var(--border-plain-info);
 }
 
 /* ---- Tables in page content ---- */
 
-#xwikicontent table {
+html body #xwikicontent table {
   border-collapse: collapse;
 }
 
-#xwikicontent table th,
-#xwikicontent table td {
+html body #xwikicontent table th,
+html body #xwikicontent table td {
   border: 1px solid var(--border-default-grey);
   padding: 0.5rem 0.75rem;
 }
 
-#xwikicontent table th {
+html body #xwikicontent table th {
   background-color: var(--background-contrast-grey);
   color: var(--text-title-grey);
   font-weight: 700;
@@ -208,32 +225,42 @@ textarea.form-control {
 
 /* ---- Breadcrumbs, headings and links ---- */
 
-.breadcrumb {
+html body .breadcrumb {
   background: none;
   color: var(--text-mention-grey);
   font-size: 0.75rem;
   padding-left: 0;
 }
 
-.breadcrumb a {
+html body .breadcrumb a,
+html body .breadcrumb > li > a {
   color: var(--text-mention-grey);
 }
 
-#document-title h1,
-#xwikicontent h1,
-#xwikicontent h2,
-#xwikicontent h3 {
+html body #document-title h1,
+html body #xwikicontent h1,
+html body #xwikicontent h2,
+html body #xwikicontent h3 {
   color: var(--text-title-grey);
   font-weight: 700;
 }
 
-#xwikicontent a:not(.btn) {
+html body #contentcontainer a:not(.btn) {
   color: var(--text-action-high-blue-france);
 }
 
 /* ---- Skip link: Flamingo's own, drawn like the DSFR's ---- */
 
-.skip-nav a.btn {
+html body .skip-nav a.btn {
   background-color: var(--background-default-grey);
   color: var(--text-action-high-blue-france);
+}
+
+/* ---- Footer: the DSFR's, on the page background, over Flamingo's footer styles ---- */
+
+html body footer.fr-footer {
+  background-color: var(--background-default-grey);
+  color: var(--text-default-grey);
+  margin: 0;
+  width: 100%;
 }

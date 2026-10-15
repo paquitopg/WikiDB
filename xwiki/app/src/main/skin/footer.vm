@@ -1,7 +1,7 @@
 ## WikiDB skin: DSFR footer in place of Flamingo's (DSFR plan KTD3), based on flamingo/footer.vm at 17.10.13.
 ## $wikidbMarque and $wikidbService come from menus_view.vm, which renders earlier in the same page.
 #if ($isInServletMode)## Visible only in a page
-<footer class="fr-footer" role="contentinfo" id="footerglobal">
+<footer class="fr-footer" role="contentinfo" id="wikidbFooter">
   <div class="fr-container">
     <div class="fr-footer__body">
       <div class="fr-footer__brand fr-enlarge-link">
