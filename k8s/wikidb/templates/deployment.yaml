@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}
   labels: {{- include "wikidb.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
   # XWiki is not clustered here and the volume is ReadWriteOnce: never run two pods at once.
   strategy: {type: Recreate}
   selector:

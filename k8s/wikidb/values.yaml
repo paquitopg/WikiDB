@@ -6,6 +6,10 @@ image:
   digest: ""
   pullPolicy: IfNotPresent
 
+# 0 stops the wiki without deleting anything, e.g. to fill an empty volume before a restore (restore.md).
+# Never more than 1: XWiki is not clustered here and the volume is ReadWriteOnce.
+replicas: 1
+
 # PostgreSQL from the Onyxia catalog (CloudNativePG). The operator's "-app" Secret carries the credentials.
 postgresql:
   host: ""            # e.g. postgresql-cnpg-123456-rw
