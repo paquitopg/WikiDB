@@ -58,6 +58,8 @@ notes (KTD16).
 3. The wiki restarts (`Recreate`, a few minutes of downtime) and upgrades its applications non-interactively.
    Updating only the export digest does not restart XWiki.
 4. Run `wikidb provision` (new spaces or rights may come with the release), then the acceptance suite on dev.
+5. Archive the volume's permanent directory, which records the newly installed extensions
+   ([restore.md](restore.md#backups)).
 
 ## Rollback
 
