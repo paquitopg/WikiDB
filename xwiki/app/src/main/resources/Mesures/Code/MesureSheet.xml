@@ -26,6 +26,12 @@
 #set ($mesureClass = $xwiki.getClass('Mesures.Code.MesureClass'))
 #set ($provenanceClass = $xwiki.getClass('Mesures.Code.ProvenanceClass'))
 #set ($provenanceFields = ['donnee', 'emetteur', 'ficheAnnuaire', 'frequence', 'format', 'contact'])
+#if (!$editing &amp;&amp; $place.bureau)
+  ## Word and PowerPoint export (U13): the export service reads the sheet with the reader's own session.
+  #set ($exportPath = "/export/Mesures/${place.bureau}/${place.perimetre}/${doc.documentReference.name}")
+Exporter : [[Word&gt;&gt;path:${exportPath}.docx]] | [[PowerPoint&gt;&gt;path:${exportPath}.pptx]]
+
+#end
 #if (!$editing)
   #mesureComplete ($doc $complete)
   #if ($complete)
