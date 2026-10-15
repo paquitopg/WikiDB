@@ -5,3 +5,7 @@ xwiki.authentication.authclass=org.xwiki.contrib.oidc.auth.OIDCAuthServiceImpl
 xwiki.store.attachment.hint=hibernate
 xwiki.store.attachment.versioning.hint=hibernate
 xwiki.store.attachment.recyclebin.hint=hibernate
+# So does the content of deleted pages and attachments: the default "file" store would keep the recycle bin on the
+# volume, outside the database backup.
+xwiki.store.recyclebin.content.hint=hibernate
+xwiki.store.attachment.recyclebin.content.hint=hibernate

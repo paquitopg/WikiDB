@@ -27,3 +27,6 @@ oidc.user.mapping=first_name=${oidc.user.givenName},last_name=${oidc.user.usual_
 oidc.user.nameFormater=${oidc.user.mail._lowerCase._clean}
 oidc.user.nameForbiddenPattern=[^a-z0-9]
 oidc.user.nameForbiddenReplacement=-
+# The search index lives on the volume. After a restore, or a volume archive older than the database dump, bring it
+# back in line with the database at startup instead of serving stale or missing results (U10).
+solr.synchronizeAtStartup=true
