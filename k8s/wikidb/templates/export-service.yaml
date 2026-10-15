@@ -1,0 +1,11 @@
+{{- if .Values.export.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-export
+  labels: {{- include "wikidb.exportLabels" . | nindent 4 }}
+spec:
+  selector: {{- include "wikidb.exportLabels" . | nindent 4 }}
+  ports:
+    - {name: http, port: 8000, targetPort: http}
+{{- end }}

@@ -1,0 +1,28 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  labels: {{- include "wikidb.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+    - hosts: [{{ required "ingress.hostname is required" .Values.ingress.hostname }}]
+  rules:
+    - host: {{ .Values.ingress.hostname }}
+      http:
+        paths:
+          {{- if .Values.export.enabled }}
+          # Same host as the wiki, so the browser sends the XWiki session cookie to the export service (KTD17).
+          - path: /export
+            pathType: Prefix
+            backend:
+              service: {name: {{ .Release.Name }}-export, port: {name: http}}
+          {{- end }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: {{ .Release.Name }}, port: {name: http}}
+{{- end }}

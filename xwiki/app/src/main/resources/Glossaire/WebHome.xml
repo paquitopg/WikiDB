@@ -1,0 +1,38 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Glossaire.WebHome" locale="">
+  <web>Glossaire</web>
+  <name>WebHome</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Main.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Glossaire budgétaire</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>Les termes budgétaires et leur définition. Tout agent de la direction peut ajouter un terme (bouton « Créer », modèle « Terme du glossaire ») ; le titre de la page est le terme.
+
+{{liveData
+  id="glossaire"
+  properties="doc.title,definition,doc.date"
+  source="liveTable"
+  sourceParameters="className=Glossaire.Code.TermeClass"
+  sort="doc.title:asc"
+  limit="25"
+}}
+{
+  "meta": {
+    "propertyDescriptors": [
+      {"id": "doc.title", "name": "Terme"},
+      {"id": "doc.date", "name": "Dernière modification"}
+    ]
+  }
+}
+{{/liveData}}</content>
+</xwikidoc>

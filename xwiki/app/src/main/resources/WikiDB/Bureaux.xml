@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="WikiDB.Bureaux" locale="">
+  <web>WikiDB</web>
+  <name>Bureaux</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WikiDB.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Registre des bureaux</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>Chaque objet //Bureau// de cette page déclare un bureau : code, intitulé et type (sectoriel ou de synthèse). Après toute modification, lancer ##wikidb provision## (voir docs/runbooks/add-a-bureau.md).
+
+{{velocity}}
+|=Code|=Intitulé|=Type
+#foreach ($bureau in $doc.getObjects('WikiDB.Code.BureauClass'))
+|$services.rendering.escape($bureau.getValue('code'), 'xwiki/2.1')|$services.rendering.escape($bureau.getValue('name'), 'xwiki/2.1')|$bureau.display('type', 'view')
+#end
+{{/velocity}}</content>
+</xwikidoc>

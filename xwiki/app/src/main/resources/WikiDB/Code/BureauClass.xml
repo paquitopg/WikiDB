@@ -1,0 +1,83 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="WikiDB.Code.BureauClass" locale="">
+  <web>WikiDB.Code</web>
+  <name>BureauClass</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WikiDB.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Bureau</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <class>
+    <name>WikiDB.Code.BureauClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <code>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Code court et alphanumérique, utilisé dans les noms d'espaces et de groupes (ex. 6BCS).</hint>
+      <name>code</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Code</prettyName>
+      <size>12</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage>Le code doit être alphanumérique.</validationMessage>
+      <validationRegExp>/^[A-Za-z0-9]+$/</validationRegExp>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </code>
+    <name>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint/>
+      <name>name</name>
+      <number>2</number>
+      <picker>0</picker>
+      <prettyName>Intitulé</prettyName>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </name>
+    <type>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue>secteur</defaultValue>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <freeText>forbidden</freeText>
+      <hint>Un bureau de synthèse voit les mesures sectorielles de tous les bureaux.</hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>type</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Type</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>secteur=Bureau sectoriel|synthese=Bureau de synthèse</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </type>
+  </class>
+</xwikidoc>

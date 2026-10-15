@@ -1,0 +1,130 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Mesures.NouvelleMesure" locale="">
+  <web>Mesures</web>
+  <name>NouvelleMesure</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Mesures.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Nouvelle fiche mesure</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{include reference="Mesures.Code.MesureMacros"/}}
+
+{{velocity}}
+#mesureBureaux ($bureaux)
+## The bureaux whose sheets the user may write: their own, or all of them for an administrator.
+#set ($mine = [])
+#foreach ($code in $bureaux.keySet())
+  #if ($xwiki.hasAccessLevel('edit', $xcontext.user, "Mesures.${code}.Secteur.WebHome"))
+    #set ($discard = $mine.add($code))
+  #end
+#end
+#set ($errors = [])
+#set ($intitule = $stringtool.trim("$!request.intitule"))
+#set ($bureau = "$!request.bureau")
+#set ($perimetre = "$!request.perimetre")
+#if ($request.method == 'POST' &amp;&amp; $mine.size() &gt; 0)
+  #if (!$services.csrf.isTokenValid($request.form_token))
+    #set ($discard = $errors.add('Le formulaire a expiré. Merci de le soumettre à nouveau.'))
+  #end
+  #if ($intitule == '')
+    #set ($discard = $errors.add("L'intitulé est obligatoire."))
+  #end
+  #if (!$mine.contains($bureau))
+    #set ($discard = $errors.add("Vous ne pouvez créer une fiche que pour votre bureau."))
+  #end
+  #if (!$mesurePerimetres.containsKey($perimetre))
+    #set ($discard = $errors.add('Choisir un périmètre.'))
+  #end
+  #if ($errors.isEmpty())
+    ## Identifiers are unique across the whole Mesures tree (KTD8). Two concurrent creations can pick the same number:
+    ## in the same space the database rejects the second save; in another space, a creator who finds another page
+    ## with the same name deletes their own. Either way the creator tries again past the number just tried, with a
+    ## random step so that two losers do not collide again (gaps in neutral identifiers are harmless).
+    #set ($created = $NULL)
+    #set ($tried = 0)
+    #foreach ($attempt in [1..10])
+      #if (!$created)
+        #set ($highest = 0)
+        #foreach ($name in $services.query.hql("select doc.name from XWikiDocument doc where doc.space like 'Mesures.%' and doc.name like 'M-%'").execute())
+          #set ($number = $numbertool.toNumber($name.substring(2)))
+          #if ($number &amp;&amp; $number.intValue() &gt; $highest)
+            #set ($highest = $number.intValue())
+          #end
+        #end
+        #if ($tried &gt;= $highest)
+          #set ($highest = $tried + $mathtool.random(1, $attempt + 2))
+        #else
+          #set ($highest = $highest + 1)
+        #end
+        #set ($tried = $highest)
+        #set ($identifier = "M-$stringtool.leftPad($highest.toString(), 4, '0')")
+        #set ($reference = $services.model.createDocumentReference('', ['Mesures', $bureau, $perimetre], $identifier))
+        #set ($newDoc = $xwiki.getDocument($reference))
+        #if ($newDoc.isNew())
+          #set ($discard = $newDoc.setTitle($intitule))
+          #set ($discard = $newDoc.newObject('Mesures.Code.MesureClass'))
+          #try ('saveError')
+            #set ($discard = $newDoc.save('Création de la fiche'))
+          #end
+          #if ("$!saveError" == '')
+            #set ($sameName = $services.query.hql("select doc.fullName from XWikiDocument doc where doc.space like 'Mesures.%' and doc.name = :name").bindValue('name', $identifier).execute())
+            #if ($sameName.size() == 1)
+              #set ($created = $reference)
+            #else
+              #set ($discard = $newDoc.delete())
+            #end
+          #end
+        #end
+      #end
+    #end
+    #if ($created)
+      $response.sendRedirect($xwiki.getURL($created, 'edit', 'editor=inline'))
+      #stop
+    #else
+      #set ($discard = $errors.add("Aucun identifiant libre n'a pu être attribué. Merci de réessayer."))
+    #end
+  #end
+#end
+#if ($mine.isEmpty())
+{{info}}Vous n'êtes membre d'aucun bureau du wiki : seuls les membres d'un bureau créent des fiches mesures. Pour être rattaché à votre bureau, contacter l'administrateur du wiki.{{/info}}
+#else
+  #foreach ($error in $errors)
+{{error}}$services.rendering.escape($error, 'xwiki/2.1'){{/error}}
+
+  #end
+{{html}}
+&lt;form method="post" action="$doc.getURL('view')" class="xform"&gt;
+  &lt;input type="hidden" name="form_token" value="$!services.csrf.token"/&gt;
+  &lt;dl&gt;
+    &lt;dt&gt;&lt;label for="intitule"&gt;Intitulé de la mesure&lt;/label&gt;
+      &lt;span class="xHint"&gt;Le nom usuel de la mesure. La page reçoit un identifiant neutre (M-0042).&lt;/span&gt;&lt;/dt&gt;
+    &lt;dd&gt;&lt;input type="text" id="intitule" name="intitule" size="60" value="$escapetool.xml($intitule)"/&gt;&lt;/dd&gt;
+    &lt;dt&gt;&lt;label for="bureau"&gt;Bureau propriétaire&lt;/label&gt;&lt;/dt&gt;
+    &lt;dd&gt;&lt;select id="bureau" name="bureau"&gt;
+    #foreach ($code in $mine)
+      &lt;option value="$escapetool.xml($code)"#if ($code == $bureau) selected="selected"#end&gt;$escapetool.xml($code) – $escapetool.xml($bureaux.get($code).name)&lt;/option&gt;
+    #end
+    &lt;/select&gt;&lt;/dd&gt;
+    &lt;dt&gt;&lt;label&gt;Périmètre&lt;/label&gt;
+      &lt;span class="xHint"&gt;Sectoriel : visible du bureau et des bureaux de synthèse. Synthèse : visible de toute la direction.&lt;/span&gt;&lt;/dt&gt;
+    &lt;dd&gt;
+    #foreach ($key in $mesurePerimetres.keySet())
+      &lt;label&gt;&lt;input type="radio" name="perimetre" value="$key"#if ($key == $perimetre || ($perimetre == '' &amp;&amp; $key == 'Secteur')) checked="checked"#end/&gt; $escapetool.xml($mesurePerimetres.get($key))&lt;/label&gt;
+    #end
+    &lt;/dd&gt;
+  &lt;/dl&gt;
+  &lt;p&gt;&lt;button type="submit" class="btn btn-primary"&gt;Créer la fiche&lt;/button&gt;&lt;/p&gt;
+&lt;/form&gt;
+{{/html}}
+#end
+{{/velocity}}</content>
+</xwikidoc>

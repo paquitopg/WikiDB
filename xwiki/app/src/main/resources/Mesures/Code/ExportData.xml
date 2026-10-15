@@ -1,0 +1,90 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Mesures.Code.ExportData" locale="">
+  <web>Mesures.Code</web>
+  <name>ExportData</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Mesures.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Données d'export des fiches mesures</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{include reference="Mesures.Code.MesureMacros"/}}
+
+{{velocity wiki="false"}}
+## JSON for the Word and PowerPoint export of one measure sheet (KTD18), fetched by the export service with the
+## reader's own session: /bin/get/Mesures/Code/ExportData?xpage=plain&amp;outputSyntax=plain&amp;mesure=Mesures.A.Secteur.M-0042
+## XWiki checks rights on this page, not on the sheet named in the parameter, so the view right is checked here. A
+## sheet outside Mesures, one the reader cannot view, a missing page and a page without a measure object all get the
+## same 404, which reveals nothing about which sheets exist.
+#set ($sheetRef = $NULL)
+#if ("$!request.mesure" != '')
+  #set ($sheetRef = $services.model.resolveDocument($request.mesure))
+#end
+#set ($sheetDoc = $NULL)
+#if ($sheetRef &amp;&amp; $sheetRef.spaceReferences.size() == 3 &amp;&amp; $sheetRef.spaceReferences.get(0).name == 'Mesures'
+    &amp;&amp; $services.security.authorization.hasAccess('view', $sheetRef) &amp;&amp; $xwiki.exists($sheetRef))
+  #set ($sheetDoc = $xwiki.getDocument($sheetRef))
+#end
+#set ($mesureObj = $sheetDoc.getObject('Mesures.Code.MesureClass'))
+#if (!$mesureObj)
+  #set ($discard = $response.setStatus(404))
+  #set ($discard = $response.setContentType('application/json'))
+{"error":"not found"}##
+#else
+  #mesurePlace ($sheetDoc $place)
+  #mesureBureaux ($bureaux)
+  #set ($mesureClass = $xwiki.getClass('Mesures.Code.MesureClass'))
+  #set ($provenanceClass = $xwiki.getClass('Mesures.Code.ProvenanceClass'))
+  #set ($fields = [])
+  #foreach ($field in ['cleSource', 'dateCreation', 'vecteurJuridique', 'raisonEtre', 'modalitesModification',
+      'documentationInterne', 'documentationExterne'])
+    ## Rendered by the sheet's own display(), so rich text runs with the sheet author's rights, never this page's.
+    #set ($displayed = $sheetDoc.display($field, 'view', $mesureObj))
+    #set ($displayed = $displayed.replaceAll('^\{\{html[^}]*\}\}', '').replaceAll('\{\{/html\s*\}\}$', '').trim())
+    #set ($discard = $fields.add({'name': $field, 'label': $mesureClass.get($field).prettyName, 'html': $displayed}))
+  #end
+  #set ($provenances = [])
+  #foreach ($provenance in $sheetDoc.getObjects('Mesures.Code.ProvenanceClass'))
+    #set ($fiche = $stringtool.trim("$!provenance.getValue('ficheAnnuaire')"))
+    #set ($ficheUrl = '')
+    #if ($fiche != '')
+      #set ($ficheRef = $services.model.resolveDocument($fiche))
+      #if ($xwiki.exists($ficheRef))
+        #set ($ficheUrl = $xwiki.getURL($ficheRef))
+      #end
+    #end
+    #set ($frequence = $sheetDoc.display('frequence', 'view', $provenance))
+    #set ($frequence = $frequence.replaceAll('^\{\{html[^}]*\}\}', '').replaceAll('\{\{/html\s*\}\}$', '').trim())
+    #set ($discard = $provenances.add({
+      'donnee': "$!provenance.getValue('donnee')",
+      'emetteur': "$!provenance.getValue('emetteur')",
+      'emetteurUrl': $ficheUrl,
+      'frequence': $frequence,
+      'format': "$!provenance.getValue('format')",
+      'contact': "$!provenance.getValue('contact')"
+    }))
+  #end
+  #set ($bureau = $bureaux.get($place.bureau))
+  #set ($discard = $response.setContentType('application/json'))
+$jsontool.serialize({
+  'identifier': $sheetRef.name,
+  'title': $sheetDoc.plainTitle,
+  'url': $xwiki.getURL($sheetRef),
+  'bureau': {'code': $place.bureau, 'name': "$!bureau.name"},
+  'perimetre': {'code': $place.perimetre, 'label': $mesurePerimetres.get($place.perimetre)},
+  'fields': $fields,
+  'provenances': $provenances,
+  'lastModified': {'date': $xwiki.formatDate($sheetDoc.date, 'dd/MM/yyyy HH:mm'),
+    'author': $xwiki.getPlainUserName($sheetDoc.authorReference)}
+})##
+#end
+{{/velocity}}</content>
+</xwikidoc>

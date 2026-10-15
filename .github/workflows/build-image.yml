@@ -1,0 +1,79 @@
+# Builds the offline extension package (XIP) and the WikiDB base image, then pushes it to GHCR (KTD2).
+# SSPCloud runs this image directly; Nubonyxia's root Dockerfile starts FROM it by digest.
+name: Build base image
+
+on:
+  push:
+    branches: [main, "feat/**"]
+    paths:
+      - "xwiki/**"
+      - "tests/unit/test_entrypoint.sh"
+      - ".github/workflows/build-image.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/wikidb
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # A pom change falls back to the previous cache instead of downloading everything again from slow repositories.
+      - uses: actions/cache/restore@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('xwiki/**/pom.xml') }}-${{ github.run_id }}
+          restore-keys: maven-
+
+      - name: Entrypoint tests
+        run: tests/unit/test_entrypoint.sh
+
+      # Each build gets its own revision so the non-interactive distribution job upgrades the default UI.
+      - name: Compute revision
+        id: rev
+        run: echo "revision=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build XIP
+        working-directory: xwiki
+        timeout-minutes: 30
+        # Transfer progress stays off, but each download is logged so a slow repository is visible.
+        run: >
+          ./mvnw -B -ntp package -Drevision=${{ steps.rev.outputs.revision }}
+          -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=info
+          -Daether.connector.http.connectionMaxTtl=60 -Daether.connector.requestTimeout=180000
+          -Daether.connector.http.retryHandler.count=6
+
+      # Saved even when the build fails, so a retry resumes the downloads instead of starting over.
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('xwiki/**/pom.xml') }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: xwiki
+          file: xwiki/Dockerfile.base
+          build-args: WIKIDB_REVISION=${{ steps.rev.outputs.revision }}
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.rev.outputs.revision }}
+            ${{ env.IMAGE }}:sha-${{ github.sha }}
+            ${{ github.ref == 'refs/heads/main' && format('{0}:latest', env.IMAGE) || format('{0}:dev', env.IMAGE) }}

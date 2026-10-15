@@ -1,0 +1,78 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Mesures.Code.MesureMacros" locale="">
+  <web>Mesures.Code</web>
+  <name>MesureMacros</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Mesures.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Macros des fiches mesures</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity output="false"}}
+## Shared by the measure sheet, the creation form and the listing.
+
+## A sheet is complete when every R1 field except the source key is filled and at least one provenance names its data
+## item and its sender. Keep in step with is_complete() in tools/wikidb/measures.py.
+#macro (mesureComplete $mesureDoc $return)
+  #set ($complete = false)
+  #set ($mesureObj = $mesureDoc.getObject('Mesures.Code.MesureClass'))
+  #if ($mesureObj)
+    #set ($complete = true)
+    #foreach ($field in ['dateCreation', 'vecteurJuridique', 'raisonEtre', 'modalitesModification',
+        'documentationInterne', 'documentationExterne'])
+      #if ($stringtool.isBlank("$!mesureObj.getValue($field)"))
+        #set ($complete = false)
+      #end
+    #end
+    #set ($withProvenance = false)
+    #foreach ($provenance in $mesureDoc.getObjects('Mesures.Code.ProvenanceClass'))
+      #if ($stringtool.isNotBlank("$!provenance.getValue('donnee')") &amp;&amp; $stringtool.isNotBlank("$!provenance.getValue('emetteur')"))
+        #set ($withProvenance = true)
+      #end
+    #end
+    #set ($complete = $complete &amp;&amp; $withProvenance)
+  #end
+  #setVariable ("$return" $complete)
+#end
+
+## Owning bureau and perimeter come from the location Mesures.&lt;code&gt;.&lt;Secteur|Synthese&gt;.&lt;page&gt; (KTD6).
+#macro (mesurePlace $mesureDoc $return)
+  #set ($place = {})
+  #set ($spaceRefs = $mesureDoc.documentReference.spaceReferences)
+  #if ($spaceRefs.size() == 3 &amp;&amp; $spaceRefs.get(0).name == 'Mesures')
+    #set ($place = {'bureau': $spaceRefs.get(1).name, 'perimetre': $spaceRefs.get(2).name})
+  #end
+  #setVariable ("$return" $place)
+#end
+
+## Registry as code -&gt; {name, type}, sorted by code. Agents cannot view WikiDB.Bureaux, so it is read with the
+## rights of this page's author.
+#macro (mesureBureaux $return)
+  #set ($registry = {})
+  #set ($registryDoc = $xwiki.getDocumentAsAuthor('WikiDB.Bureaux'))
+  #set ($entries = $registryDoc.getObjects('WikiDB.Code.BureauClass'))
+  #set ($codes = [])
+  #foreach ($entry in $entries)
+    #set ($discard = $codes.add("$!entry.getValue('code')"))
+  #end
+  #foreach ($code in $collectiontool.sort($codes))
+    #foreach ($entry in $entries)
+      #if ("$!entry.getValue('code')" == $code)
+        #set ($discard = $registry.put($code, {'name': "$!entry.getValue('name')", 'type': "$!entry.getValue('type')"}))
+      #end
+    #end
+  #end
+  #setVariable ("$return" $registry)
+#end
+
+#set ($mesurePerimetres = {'Secteur': 'Sectoriel', 'Synthese': 'Synthèse'})
+{{/velocity}}</content>
+</xwikidoc>

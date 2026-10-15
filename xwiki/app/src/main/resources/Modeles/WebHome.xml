@@ -1,0 +1,26 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Modeles.WebHome" locale="">
+  <web>Modeles</web>
+  <name>WebHome</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Main.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Modèles de pages</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>Modèles de pages proposés à la création d'une page dans l'espace d'un bureau ou dans l'espace principal : compte rendu de réunion, note brève et relevé de décision.
+
+* [[Compte rendu de réunion&gt;&gt;Modeles.CompteRendu]]
+* [[Note brève&gt;&gt;Modeles.NoteBreve]]
+* [[Relevé de décision&gt;&gt;Modeles.ReleveDecision]]
+
+Ces pages ne se modifient que sur le wiki de développement, puis s'exportent dans ##xwiki/app##.</content>
+</xwikidoc>

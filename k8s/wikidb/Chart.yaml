@@ -1,0 +1,5 @@
+apiVersion: v2
+name: wikidb
+description: Direction du Budget knowledge wiki (XWiki 17.10 LTS) on Onyxia
+type: application
+version: 0.1.0

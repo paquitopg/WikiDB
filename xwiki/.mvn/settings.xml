@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Repositories declared deep in third-party POMs (some long dead) make resolution hang on unreachable hosts, and
+     repo.maven.apache.org times out from GitHub runners. Route Central and every repository this build does not
+     declare through Google's mirror of Maven Central, which answers fast. -->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+  <mirrors>
+    <mirror>
+      <id>central-mirror</id>
+      <mirrorOf>*,!xwiki-releases,!xwiki-externals,!css4j</mirrorOf>
+      <url>https://maven-central.storage-download.googleapis.com/maven2</url>
+    </mirror>
+  </mirrors>
+</settings>
