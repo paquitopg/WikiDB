@@ -1,0 +1,55 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Annuaire.Code.BureauEntreeSheet" locale="">
+  <web>Annuaire.Code</web>
+  <name>BureauEntreeSheet</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Annuaire.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{include reference="Mesures.Code.MesureMacros"/}}
+
+{{velocity}}
+#set ($discard = $doc.use('Annuaire.Code.BureauEntreeClass'))
+#set ($editing = $xcontext.action == 'edit')
+#set ($appClass = $xwiki.getClass('Annuaire.Code.BureauEntreeClass'))
+#mesureBureaux ($bureaux)
+#set ($spaceRefs = $doc.documentReference.spaceReferences)
+#set ($ownerCode = '')
+#if ($spaceRefs.size() &gt; 2 &amp;&amp; $spaceRefs.get(0).name == 'Annuaire')
+  #set ($ownerCode = $spaceRefs.get(2).name)
+#end
+
+
+{{html wiki="true"}}
+&lt;div class="xform"&gt;
+&lt;dl&gt;
+#if ($ownerCode != '')
+  &lt;dt&gt;&lt;label&gt;Bureau&lt;/label&gt;&lt;/dt&gt;
+  &lt;dd&gt;$escapetool.xml($ownerCode)#if ($bureaux.get($ownerCode)) – $escapetool.xml($bureaux.get($ownerCode).name)#end&lt;/dd&gt;
+#end
+#foreach ($field in ['missions', 'sujets', 'referents', 'contact'])
+  &lt;dt&gt;
+    &lt;label#if ($editing) for="Annuaire.Code.BureauEntreeClass_0_$field"#end&gt;$escapetool.xml($doc.displayPrettyName($field, false, false))&lt;/label&gt;
+    #if ($editing)&lt;span class="xHint"&gt;$!escapetool.xml($appClass.get($field).getValue('hint'))&lt;/span&gt;#end
+  &lt;/dt&gt;
+  &lt;dd&gt;$doc.display($field)&lt;/dd&gt;
+#end
+#if (!$editing)
+  &lt;dt&gt;&lt;label&gt;Dernière modification&lt;/label&gt;&lt;/dt&gt;
+  &lt;dd&gt;$escapetool.xml($xwiki.formatDate($doc.date, 'dd/MM/yyyy HH:mm')) par $xwiki.getUserName($doc.author)&lt;/dd&gt;
+#end
+&lt;/dl&gt;
+&lt;/div&gt;
+{{/html}}
+{{/velocity}}</content>
+</xwikidoc>

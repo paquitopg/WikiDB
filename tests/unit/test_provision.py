@@ -116,3 +116,14 @@ def test_flavor_grant_to_every_registered_user_is_removed_so_unlisted_users_get_
     assert not any("XWiki.XWikiAllGroup" in r.groups for r in wiki_rules if r)
     assert any("XWikiAllGroup" in c for c in report.changes)
     assert apply(wiki, target_state([A])).changes == []
+
+
+def test_each_bureau_gets_one_directory_entry_its_members_complete():
+    wiki = wiki_with_flavor()
+    apply(wiki, target_state([A, S1]))
+    for code in ("A", "S1"):
+        assert len(wiki.objs(f"Annuaire.Bureaux.{code}.WebHome", "Annuaire.Code.BureauEntreeClass")) == 1
+    wiki.objects["Annuaire.Bureaux.A.WebHome"]["Annuaire.Code.BureauEntreeClass"][0]["missions"] = "Rédigé"
+    apply(wiki, target_state([A, S1]))
+    entries = wiki.objs("Annuaire.Bureaux.A.WebHome", "Annuaire.Code.BureauEntreeClass")
+    assert len(entries) == 1 and entries[0]["missions"] == "Rédigé"

@@ -1,0 +1,58 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Annuaire.WebHome" locale="">
+  <web>Annuaire</web>
+  <name>WebHome</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Main.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Qui fait quoi</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>Qui fait quoi dans la direction, et qui nous envoie quelles données. Chaque bureau tient sa fiche à jour ; l'administrateur tient la liste des émetteurs externes. Coordonnées professionnelles seulement.
+
+== Bureaux ==
+
+{{liveData
+  id="annuaire-bureaux"
+  properties="doc.title,missions,contact"
+  source="liveTable"
+  sourceParameters="className=Annuaire.Code.BureauEntreeClass"
+  sort="doc.title:asc"
+  limit="25"
+}}
+{
+  "meta": {
+    "propertyDescriptors": [
+      {"id": "doc.title", "name": "Bureau"}
+    ]
+  }
+}
+{{/liveData}}
+
+== Émetteurs externes ==
+
+{{liveData
+  id="annuaire-emetteurs"
+  properties="doc.title,organisme,donnees,contactFonctionnel"
+  source="liveTable"
+  sourceParameters="className=Annuaire.Code.EmetteurClass"
+  sort="doc.title:asc"
+  limit="25"
+}}
+{
+  "meta": {
+    "propertyDescriptors": [
+      {"id": "doc.title", "name": "Émetteur"}
+    ]
+  }
+}
+{{/liveData}}</content>
+</xwikidoc>

@@ -7,7 +7,7 @@ the registry are reported, never deleted.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .client import PageRef, XWikiClient
 from .naming import GROUP_DIRECTION, GROUP_SYNTHESE, bureau_group, group_reference
@@ -17,6 +17,7 @@ BUREAU_CLASS = "WikiDB.Code.BureauClass"
 GROUPS_CLASS = "XWiki.XWikiGroups"
 GLOBAL_RIGHTS_CLASS = "XWiki.XWikiGlobalRights"
 PREFERENCES_CLASS = "XWiki.XWikiPreferences"
+DIRECTORY_ENTRY_CLASS = "Annuaire.Code.BureauEntreeClass"
 WIKI_PREFERENCES = PageRef(("XWiki",), "XWikiPreferences")
 ADMINS = "XWiki.XWikiAdminGroup"
 ALL_USERS = "XWiki.XWikiAllGroup"
@@ -80,6 +81,8 @@ class TargetState:
     spaces: list[Space]
     wiki_rules: list[Rule]                 # wiki-level rules that must exist (others are left alone)
     wiki_preferences: dict[str, str]
+    # Bureau "who-does-what" pages that must carry one directory-entry object for members to complete (R14).
+    directory_entries: list[PageRef] = field(default_factory=list)
 
 
 def _g(name: str) -> str:
@@ -135,6 +138,7 @@ def target_state(bureaux: list[Bureau]) -> TargetState:
         wiki_rules=wiki_rules,
         wiki_preferences={"authenticate_view": "1", "default_language": "fr", "multilingual": "0",
                           "languages": "fr"},
+        directory_entries=[PageRef(("Annuaire", "Bureaux", b.code)) for b in sorted(bureaux, key=lambda b: b.code)],
     )
 
 
@@ -207,6 +211,11 @@ def apply(client: XWikiClient, state: TargetState, existing_bureau_spaces: list[
             client.put_page(space.home, space.title)
             changes.append(f"created space {'.'.join(space.spaces)}")
         _set_space_rules(client, space, changes)
+
+    for page in state.directory_entries:
+        if not client.list_objects(page, DIRECTORY_ENTRY_CLASS):
+            client.add_object(page, DIRECTORY_ENTRY_CLASS, {})
+            changes.append(f"{page}: added the who-does-what entry")
 
     # Every registered user is in XWikiAllGroup, including ProConnect users absent from the HR listing. The Standard
     # flavor allows it edit (which implies view) at wiki level; remove any such grant so GroupeDirection is the only

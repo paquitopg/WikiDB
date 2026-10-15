@@ -1,0 +1,123 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Annuaire.Code.EmetteurTemplate" locale="">
+  <web>Annuaire.Code</web>
+  <name>EmetteurTemplate</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Annuaire.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Émetteur externe</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content></content>
+  <object>
+    <name>Annuaire.Code.EmetteurTemplate</name>
+    <number>0</number>
+    <className>Annuaire.Code.EmetteurClass</className>
+    <guid>db889871-37cd-5221-b7be-a79f97c69d58</guid>
+    <class>
+      <name>Annuaire.Code.EmetteurClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <organisme>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <hint>Administration ou organisme (ex. Insee, DGFiP).</hint>
+        <name>organisme</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Organisme</prettyName>
+        <size>60</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </organisme>
+      <service>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <hint>Direction, service ou bureau émetteur.</hint>
+        <name>service</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Service</prettyName>
+        <size>60</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </service>
+      <donnees>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>Wysiwyg</editor>
+        <hint>Les données que cet émetteur envoie à la direction.</hint>
+        <name>donnees</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Données transmises</prettyName>
+        <rows>6</rows>
+        <size>60</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </donnees>
+      <contactFonctionnel>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <hint>Adresse fonctionnelle ou boîte du service, jamais une adresse personnelle.</hint>
+        <name>contactFonctionnel</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Contact fonctionnel</prettyName>
+        <size>60</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </contactFonctionnel>
+      <telephoneService>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <hint>Standard ou ligne du service.</hint>
+        <name>telephoneService</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>Téléphone du service</prettyName>
+        <size>60</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </telephoneService>
+    </class>
+    <property>
+      <organisme/>
+    </property>
+    <property>
+      <service/>
+    </property>
+    <property>
+      <donnees/>
+    </property>
+    <property>
+      <contactFonctionnel/>
+    </property>
+    <property>
+      <telephoneService/>
+    </property>
+  </object>
+</xwikidoc>

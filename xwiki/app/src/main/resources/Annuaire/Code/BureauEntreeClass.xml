@@ -1,0 +1,124 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Annuaire.Code.BureauEntreeClass" locale="">
+  <web>Annuaire.Code</web>
+  <name>BureauEntreeClass</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Annuaire.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Fiche bureau (qui fait quoi)</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content></content>
+  <class>
+    <name>Annuaire.Code.BureauEntreeClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <missions>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>Wysiwyg</editor>
+      <hint>Les missions du bureau.</hint>
+      <name>missions</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Missions</prettyName>
+      <rows>6</rows>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </missions>
+    <sujets>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>Wysiwyg</editor>
+      <hint>Les sujets, dispositifs et programmes suivis.</hint>
+      <name>sujets</name>
+      <number>2</number>
+      <picker>0</picker>
+      <prettyName>Sujets suivis</prettyName>
+      <rows>6</rows>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </sujets>
+    <referents>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>Wysiwyg</editor>
+      <hint>Pour chaque sujet, la personne à contacter (nom et fonction).</hint>
+      <name>referents</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Référents par sujet</prettyName>
+      <rows>6</rows>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </referents>
+    <contact>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Adresse de messagerie fonctionnelle du bureau.</hint>
+      <name>contact</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Adresse fonctionnelle</prettyName>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </contact>
+  </class>
+  <object>
+    <name>Annuaire.Code.BureauEntreeClass</name>
+    <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>c4d02cf2-e761-51f8-94c3-674c233fb381</guid>
+    <class>
+      <name>XWiki.ClassSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Sheet</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </sheet>
+    </class>
+    <property>
+      <sheet>Annuaire.Code.BureauEntreeSheet</sheet>
+    </property>
+  </object>
+</xwikidoc>
