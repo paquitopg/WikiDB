@@ -28,8 +28,15 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
-          cache: maven
-          cache-dependency-path: xwiki/**/pom.xml
+
+      # A pom change falls back to the previous cache instead of downloading everything again from slow repositories.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('xwiki/**/pom.xml') }}
+          restore-keys: |
+            maven-
+            setup-java-Linux-
 
       - name: Entrypoint tests
         run: tests/unit/test_entrypoint.sh
@@ -46,7 +53,8 @@ jobs:
         run: >
           ./mvnw -B -ntp package -Drevision=${{ steps.rev.outputs.revision }}
           -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=info
-          -Daether.connector.http.connectionMaxTtl=60 -Daether.connector.requestTimeout=60000
+          -Daether.connector.http.connectionMaxTtl=60 -Daether.connector.requestTimeout=180000
+          -Daether.connector.http.retryHandler.count=6
 
       - uses: docker/login-action@v3
         with:
