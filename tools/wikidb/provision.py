@@ -110,6 +110,8 @@ def target_state(bureaux: list[Bureau]) -> TargetState:
         # Diagram Application home: agents create diagrams beside the page that holds them, never here (KTD20).
         Space(("Diagram",), "Diagrammes", admins_only_edit),
         Space(("WikiDB",), "Administration du wiki", (Rule((ADMINS,), ("view", "edit", "delete")),)),
+        # Pages behind the DSFR footer's mandatory links: every agent reads them (DSFR plan U4).
+        Space(("APropos",), "À propos du wiki", admins_only_edit),
         # Group pages and every other XWiki-space page: administrators only; user profiles keep their page rights.
         Space(("XWiki",), "XWiki", admins_only_edit),
     ]
@@ -138,8 +140,9 @@ def target_state(bureaux: list[Bureau]) -> TargetState:
         synthese_members=sorted(_g(bureau_group(b.code)) for b in bureaux if b.kind == SYNTHESE),
         spaces=spaces,
         wiki_rules=wiki_rules,
+        # The skin replaces the flavor's XWiki.DefaultSkin; xwiki.defaultskin in xwiki.cfg loses to this preference.
         wiki_preferences={"authenticate_view": "1", "default_language": "fr", "multilingual": "0",
-                          "languages": "fr"},
+                          "languages": "fr", "skin": "WikiDB.Code.Skin"},
         directory_entries=[PageRef(("Annuaire", "Bureaux", b.code)) for b in sorted(bureaux, key=lambda b: b.code)],
     )
 
