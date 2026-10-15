@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>fr.finances.budget.wikidb</groupId>
+    <artifactId>wikidb-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>wikidb-dsfr</artifactId>
+  <packaging>jar</packaging>
+  <name>WikiDB - DSFR</name>
+  <description>Système de Design de l'État (DSFR), repackaged from the official npm release, and the WikiDB bridge stylesheet, as an offline webjar</description>
+  <properties>
+    <!-- XWiki installs this JAR as a webjar and serves it through $services.webjars.url, without page rights: the
+         login page and outsiders get the same files. The path carries the build revision, so a new release never
+         reuses a cached stylesheet. -->
+    <xwiki.extension.jar.type>webjar</xwiki.extension.jar.type>
+    <dsfr.webjar.dir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</dsfr.webjar.dir>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- The npm tarball is checked against the sha512 published in the npm registry (dist.integrity). -->
+        <groupId>io.github.download-maven-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <version>2.1.0</version>
+        <executions>
+          <execution>
+            <id>download-dsfr</id>
+            <phase>generate-resources</phase>
+            <goals><goal>wget</goal></goals>
+            <configuration>
+              <uri>https://registry.npmjs.org/@gouvfr/dsfr/-/dsfr-${dsfr.version}.tgz</uri>
+              <sha512>${dsfr.sha512}</sha512>
+              <unpack>true</unpack>
+              <outputDirectory>${project.build.directory}/npm</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- Minified CSS and JS plus fonts, icons and artwork only: the full package is 136 MB. -->
+            <id>copy-dsfr</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy-resources</goal></goals>
+            <configuration>
+              <outputDirectory>${dsfr.webjar.dir}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/npm/package</directory>
+                  <includes>
+                    <include>LICENSE.md</include>
+                    <include>dist/**/*.min.css</include>
+                    <include>dist/**/*.min.js</include>
+                    <include>dist/fonts/**</include>
+                    <include>dist/icons/**</include>
+                    <include>dist/artwork/**</include>
+                    <include>dist/favicon/**</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>src/main/webjar</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

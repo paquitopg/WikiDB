@@ -29,8 +29,13 @@
     <oidc.version>2.28.1</oidc.version>
     <!-- Diagram Application (draw.io), free edition (U12, KTD20); not supported by the XWiki core team. -->
     <diagram.version>1.3.1</diagram.version>
+    <!-- DSFR (U1 of the DSFR plan): official npm release, newest one at least two weeks old when pinned.
+         The sha512 is the npm registry's dist.integrity for that version, in hex. -->
+    <dsfr.version>1.15.3</dsfr.version>
+    <dsfr.sha512>47d0002d97352df663b72b5664c39a50838759392594167fb1996c2fc4e9299560177a94297b7fb8d621f8bd43d45878a7dd99a96c5bb4d71e6ec8a00597b9a5</dsfr.sha512>
   </properties>
   <modules>
+    <module>dsfr</module>
     <module>app</module>
     <module>mainwiki</module>
     <module>xip</module>
