@@ -1,8 +1,9 @@
-"""`wikidb` command: provisioning, HR sync, import, completeness, backup and freshness checks.
+"""`wikidb` command: provisioning, directory download, HR sync, import, completeness, backup and freshness checks.
 
 Settings come from the environment, otherwise from /secrets/app/<NAME> (KTD11):
 WIKIDB_URL, WIKIDB_ROBOT_USER, WIKIDB_ROBOT_PASSWORD; for MinIO: AWS_S3_ENDPOINT, AWS_ACCESS_KEY_ID,
-AWS_SECRET_ACCESS_KEY, WIKIDB_HR_BUCKET, WIKIDB_BACKUP_BUCKET.
+AWS_SECRET_ACCESS_KEY, WIKIDB_HR_BUCKET, WIKIDB_BACKUP_BUCKET; for the directory download: HR_LISTING_URL and,
+on Nubonyxia, HR_LISTING_PROXY and HR_LISTING_CACERT (values kept in the private Forge project, KTD16).
 """
 
 from __future__ import annotations
@@ -14,7 +15,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from . import backup, hrsync, importer, measures, provision
+from . import backup, fetch, hrsync, importer, measures, naming, provision
 from .client import PageRef, XWikiClient, setting
 
 SYNC_REPORT_PAGE = PageRef(("WikiDB",), "SynchronisationRH")
@@ -75,7 +76,10 @@ def cmd_hrsync(args) -> int:
     content = s3.get_object(Bucket=bucket, Key=newest["Key"])["Body"].read()
     try:
         listing = hrsync.parse_listing(content, newest["LastModified"], now, provision.read_registry(client),
-                                       timedelta(hours=args.max_age_hours))
+                                       timedelta(hours=args.max_age_hours), min_rows=args.min_rows)
+        current = [o for o in client.list_objects(PageRef(("XWiki",), naming.GROUP_DIRECTION), provision.GROUPS_CLASS)
+                   if o.properties.get("member")]
+        hrsync.check_shrink(listing, len(current), force=args.force)
     except hrsync.ListingRejected as rejected:
         print(f"ERROR: {newest['Key']} rejected, membership unchanged:", file=sys.stderr)
         for problem in rejected.problems:
@@ -90,6 +94,19 @@ def cmd_hrsync(args) -> int:
     client.put_page(SYNC_REPORT_PAGE, "Synchronisation RH", summary.render(now), hidden=True)
     s3.put_object(Bucket=bucket, Key=f"{HR_MARKER_PREFIX}/{backup.MARKER}", Body=now.isoformat().encode())
     print(summary.render(now))
+    return 0
+
+
+def cmd_fetch_listing(args) -> int:
+    """Download the Direction's directory into the HR bucket (scheduled daily before hrsync on Nubonyxia)."""
+    try:
+        key = fetch.fetch_listing(setting("HR_LISTING_URL"), _s3(), setting("WIKIDB_HR_BUCKET"), args.prefix,
+                                  datetime.now(timezone.utc), proxy=setting("HR_LISTING_PROXY", "") or None,
+                                  cacert=setting("HR_LISTING_CACERT", "") or None)
+    except fetch.FetchFailed as failed:
+        print(f"ERROR: {failed}; previous listings unchanged", file=sys.stderr)
+        return 1
+    print(f"listing stored: {key}")
     return 0
 
 
@@ -160,6 +177,10 @@ def main(argv=None) -> int:
     p = sub.add_parser("hrsync", help="sync GroupeDirection and bureau groups from the newest HR listing")
     p.add_argument("--prefix", default="listings/")
     p.add_argument("--max-age-hours", type=int, default=72)
+    p.add_argument("--min-rows", type=int, default=50, help="fewest agents a whole-Direction listing may hold")
+    p.add_argument("--force", action="store_true", help="accept a listing that removes over 30%% of GroupeDirection")
+    p = sub.add_parser("fetch-listing", help="download the Direction's directory (HR_LISTING_URL) into the HR bucket")
+    p.add_argument("--prefix", default="listings/")
     p = sub.add_parser("import", help="import a CSV/XLSX list of measures as skeleton sheets")
     p.add_argument("file")
     p.add_argument("--apply", action="store_true", help="write (default is a dry run)")
@@ -171,7 +192,7 @@ def main(argv=None) -> int:
     p.add_argument("--prefix")
     p.add_argument("--max-age-hours", type=int, default=48)
     args = parser.parse_args(argv)
-    return {"bootstrap": cmd_bootstrap, "provision": cmd_provision, "hrsync": cmd_hrsync, "import": cmd_import,
+    return {"bootstrap": cmd_bootstrap, "provision": cmd_provision, "hrsync": cmd_hrsync, "fetch-listing": cmd_fetch_listing, "import": cmd_import,
             "completeness": cmd_completeness, "backup": cmd_backup, "check-fresh": cmd_check_fresh}[args.command](args)
 
 
