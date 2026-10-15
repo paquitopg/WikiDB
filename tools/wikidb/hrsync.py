@@ -1,6 +1,6 @@
 """HR listing -> GroupeDirection and bureau group membership (U8; R16, R17, KTD9, KTD14).
 
-The listing is a CSV with two columns, `email` and `bureau`. A file that fails any check is rejected whole and
+The listing is a CSV with two columns, `email` and `bureau`; an empty bureau means a Direction agent in no bureau. A file that fails any check is rejected whole and
 membership is left unchanged.
 """
 
@@ -33,6 +33,8 @@ class ListingRejected(ValueError):
 class Listing:
     by_bureau: dict[str, set[str]]           # bureau code -> user references
     emails: dict[str, str]                   # user reference -> email
+    # Direction agents in no bureau (empty bureau column): GroupeDirection only (R17).
+    without_bureau: set[str] = field(default_factory=set)
 
 
 def parse_listing(content: bytes, last_modified: datetime, now: datetime, bureaux: list[Bureau],
@@ -53,6 +55,7 @@ def parse_listing(content: bytes, last_modified: datetime, now: datetime, bureau
     seen: dict[str, tuple[str, int]] = {}         # email -> (bureau, line)
     references: dict[str, str] = {}               # user name -> email
     by_bureau: dict[str, set[str]] = {code: set() for code in known}
+    without_bureau: set[str] = set()
     emails: dict[str, str] = {}
     rows = 0
     for line, raw in enumerate(reader, start=2):
@@ -64,7 +67,7 @@ def parse_listing(content: bytes, last_modified: datetime, now: datetime, bureau
         if not EMAIL.match(email):
             problems.append(f"line {line}: malformed email {email!r}")
             continue
-        if bureau not in known:
+        if bureau and bureau not in known:
             problems.append(f"line {line}: unknown bureau code {bureau!r}")
             continue
         if email in seen:
@@ -77,13 +80,13 @@ def parse_listing(content: bytes, last_modified: datetime, now: datetime, bureau
             problems.append(f"line {line}: {email} and {references[name]} map to the same wiki user {name}")
             continue
         references[name] = email
-        by_bureau[bureau].add(user_reference(email))
+        (by_bureau[bureau] if bureau else without_bureau).add(user_reference(email))
         emails[user_reference(email)] = email
     if rows == 0:
         problems.append("the listing has no rows")
     if problems:
         raise ListingRejected(problems)
-    return Listing(by_bureau, emails)
+    return Listing(by_bureau, emails, without_bureau)
 
 
 @dataclass
@@ -107,7 +110,7 @@ class SyncSummary:
 def sync(client: XWikiClient, listing: Listing, previous_state: dict[str, str], today: datetime,
          pending_after: timedelta = timedelta(days=14)) -> SyncSummary:
     summary = SyncSummary()
-    everyone = set().union(*listing.by_bureau.values()) if listing.by_bureau else set()
+    everyone = set().union(*listing.by_bureau.values(), listing.without_bureau)
     set_group_members(client, PageRef(("XWiki",), GROUP_DIRECTION), everyone, summary.changes)
     for code, members in sorted(listing.by_bureau.items()):
         set_group_members(client, PageRef(("XWiki",), bureau_group(code)), members, summary.changes)
