@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8"?>
 
-<!-- DSFR skin (DSFR plan KTD1, KTD3). Its two templates live as plain files in xwiki/app/src/main/skin/ and are
+<!-- DSFR skin (DSFR plan KTD1, KTD3). Its templates live as plain files in xwiki/app/src/main/skin/ and are
      inserted at build time (xwiki/app/pom.xml): edit them there, not here. -->
 <xwikidoc version="1.6" reference="WikiDB.Code.Skin" locale="">
   <web>WikiDB.Code</web>
@@ -21,6 +21,15 @@
   <content></content>
   <attachment>
     <filename>menus_view.vm</filename>
+    <mimetype>text/plain</mimetype>
+    <filesize>0</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <version>1.1</version>
+    <comment/>
+    <content></content>
+  </attachment>
+  <attachment>
+    <filename>wikidb_dsfr.vm</filename>
     <mimetype>text/plain</mimetype>
     <filesize>0</filesize>
     <author>xwiki:XWiki.Admin</author>

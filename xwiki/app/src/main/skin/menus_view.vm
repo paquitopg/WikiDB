@@ -4,20 +4,7 @@
 ## Flamingo's menus_view.vm and carry its changes here (docs/runbooks/deploy.md).
 #if ($isInServletMode)## Visible only in a page
   #template("menus_macros.vm")
-  ## Bloc-marque and service title: the one place to edit after a ministry rename (KTD6).
-  ## shortcut: generic ministry wording until the communication service confirms the current one (plan Q1).
-  #set ($wikidbMarque = ['Ministère', "de l'Économie", 'et des Finances'])
-  #set ($wikidbService = 'Direction du Budget')
-  #set ($wikidbTagline = 'Wiki des mesures et des procédures')
-  ## DSFR files from the offline webjar (U1), then the bridge stylesheet, which must load last (KTD4).
-  #set ($dsfr = 'fr.finances.budget.wikidb:wikidb-dsfr')
-  #foreach ($css in ['core/core', 'component/link/link', 'component/button/button', 'component/logo/logo',
-      'component/modal/modal', 'component/navigation/navigation', 'component/header/header',
-      'component/footer/footer', 'component/alert/alert', 'component/breadcrumb/breadcrumb',
-      'component/form/form', 'component/input/input', 'component/table/table', 'component/tag/tag'])
-    $xwiki.linkx.use($services.webjars.url($dsfr, "dist/${css}.min.css"), {'type': 'text/css', 'rel': 'stylesheet'})
-  #end
-  $xwiki.linkx.use($services.webjars.url($dsfr, 'wikidb/dsfr-bridge.css'), {'type': 'text/css', 'rel': 'stylesheet'})
+  #template("wikidb_dsfr.vm")
   #set ($wikidbSection = $doc.documentReference.spaceReferences.get(0).name)
   <header role="banner" class="fr-header" id="wikidbHeader">
     <div class="fr-header__body">
@@ -26,7 +13,7 @@
           <div class="fr-header__brand fr-enlarge-link">
             <div class="fr-header__brand-top">
               <div class="fr-header__logo">
-                <p class="fr-logo">#foreach ($line in $wikidbMarque)$escapetool.xml($line)#if ($foreach.hasNext)<br>#end#end</p>
+                <p class="fr-logo">$wikidbLogo</p>
               </div>
               <div class="fr-header__navbar">
                 <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="wikidbMenu"

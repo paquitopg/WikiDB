@@ -79,6 +79,10 @@ def test_pages_load_resources_from_the_wiki_only(world, base_url):
         sources = re.findall(r'\bsrc="(https?://[^"/]+)', html)
         sources += re.findall(r'<link\b[^>]*\bhref="(https?://[^"/]+)', html)
         assert {urlsplit(s).netloc for s in sources} <= {own}, sources
+    # The DSFR and bridge stylesheets must not pull fonts, icons or other sheets from another host either.
+    for href in {h for h in stylesheets(a.view_html(HOME).text) if "/wikidb-dsfr/" in h}:
+        css = a.session.get(urljoin(base_url, href), headers={"Accept": "*/*"}).text
+        assert not re.search(r"""url\(\s*['"]?(https?:)?//|@import""", css), href
 
 
 def test_footer_pages_are_french_readable_by_agents_and_edited_by_admins_only(world):

@@ -28,6 +28,12 @@
             </transformation>
             <transformation>
               <file>WikiDB/Code/Skin.xml</file>
+              <xpath>/xwikidoc/attachment[filename='wikidb_dsfr.vm']</xpath>
+              <action>INSERT_ATTACHMENT_CONTENT</action>
+              <content>${project.basedir}/src/main/skin/wikidb_dsfr.vm</content>
+            </transformation>
+            <transformation>
+              <file>WikiDB/Code/Skin.xml</file>
               <xpath>/xwikidoc/attachment[filename='menus_view.vm']</xpath>
               <action>INSERT_ATTACHMENT_CONTENT</action>
               <content>${project.basedir}/src/main/skin/menus_view.vm</content>
