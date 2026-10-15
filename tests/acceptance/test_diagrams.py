@@ -23,7 +23,7 @@ def diagram(world, robot):
     writer.put_page(page, "Flux de données zorglubD", EMPTY_DIAGRAM)
     writer.add_object(page, DIAGRAM_CLASS, {})
     yield page
-    robot.delete_page(page)
+    writer.delete_page(page)            # by A: opening the editor leaves A's edit lock, which blocks other deleters
 
 
 def test_diagram_is_editable_by_its_bureau_without_script_right(world, diagram):
@@ -52,5 +52,7 @@ def test_diagram_editor_loads_resources_from_the_wiki_only(world, diagram, base_
     assert r.status_code == 200
     assert "draw" in r.text.lower() or "mxgraph" in r.text.lower()
     own = urlsplit(base_url).netloc
-    sources = re.findall(r'(?:src|href)="(https?://[^"/]+)', r.text)
+    # Loaded resources only: scripts, images, frames and stylesheets (plain <a> links, e.g. the footer, load nothing).
+    sources = re.findall(r'\bsrc="(https?://[^"/]+)', r.text)
+    sources += re.findall(r'<link\b[^>]*\bhref="(https?://[^"/]+)', r.text)
     assert {urlsplit(s).netloc for s in sources} <= {own}, sources
