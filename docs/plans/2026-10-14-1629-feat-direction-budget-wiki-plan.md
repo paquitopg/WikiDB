@@ -17,7 +17,7 @@ execution: code
 - **Product authority:** The project lead at the Direction du Budget who requested this work. The Product Contract wins on behavior; KTDs win on mechanism.
 - **Execution profile:** Platform feasibility first (U1), then the packaged wiki, then the applications and operations tooling. Development and acceptance testing run on SSPCloud with fictitious data only (R20).
 - **Stop conditions:** Stop and return to the product authority if U1 shows that Nubonyxia can give XWiki neither a persistent volume nor a deployment path outside the platform template, or that ProConnect cannot be reached from the wiki's pod with any accepted `User-Agent`.
-- **Who finishes:** The implementer delivers U1–U10. Opening the pilot requires the human steps in Operational / Rollout Notes: the hosting agreement, the HR listing feed, ProConnect client registration, and the champions' completion of their sheets.
+- **Who finishes:** The implementer delivers U1–U14. Opening the pilot requires the human steps in Operational / Rollout Notes: the hosting agreement, the HR listing feed, ProConnect client registration, and the champions' completion of their sheets.
 - **Open blockers:** None for planning. Implementation from U3 onward depends on U1's findings (see Open Questions).
 
 ---
@@ -57,6 +57,8 @@ The pain is broad and recognised across the Direction rather than tied to one tr
 - **Data provenance lives inside each measure sheet.** Governs R2. (session-settled: user-directed — chosen over shared data-flow pages referenced by measures, and a flow-first catalogue: simplest for bureaux; revisit when calculation engines arrive, accepting that reworking imported sheets then has a cost.)
 - **Only agents in the HR listing get access; any other ProConnect user sees nothing.** Governs R6, R10, R17. (session-settled: user-directed — chosen over admitting any ProConnect user, and read-only access for outsiders: ProConnect federates agents from every administration, and the wiki is for the Direction du Budget.)
 - **Synthesis bureaux do not see sector bureaux' private working spaces.** Their cross-perimeter view covers measure sheets only. Governs R11.
+- **Agents get the everyday wiki tools of a Confluence-class wiki where the pilot needs them: French page templates and diagrams.** Governs R25, R26. (session-settled: user-directed — chosen from a gap analysis against Confluence; email notifications, PDF export, blog, tasks and analytics stay deferred.)
+- **Measure sheets can be exported to Word and PowerPoint.** Agents reuse sheet content in notes and briefing decks, which are produced in Office. Governs R27. (session-settled: user-directed — requested explicitly; PDF export alone would not give an editable document.)
 - **Default editing rights in the common area.** Each procedure sheet is edited by its owning bureau. Glossary entries are editable by any Direction agent. Each bureau edits its own who-does-what entry, and the administrator edits external contacts. Governs R10.
 
 ### Requirements
@@ -110,6 +112,12 @@ The resulting read matrix for measure sheets (R6, R7):
 - R23. Content (pages, attachments, history) is backed up regularly, and one full restore is rehearsed before the pilot opens.
 - R24. The interface and page templates are in French.
 
+**Everyday wiki tools**
+
+- R25. When creating a page in a bureau's private space or the `Main` space, agents can start from French templates for meeting minutes, briefing notes and decision records.
+- R26. Agents can draw and edit diagrams (for example data flows) inside wiki pages. Diagrams follow the rights of the page that holds them and work without internet access.
+- R27. Any reader of a measure sheet can download it as a Word document (.docx) or a PowerPoint presentation (.pptx). The file contains what the reader sees on the sheet: the R1 fields, the provenance blocks, the owning bureau, the perimeter and the last modification.
+
 ### Key Flows
 
 - F1. Look up a measure
@@ -143,6 +151,7 @@ The resulting read matrix for measure sheets (R6, R7):
 - AE6. **Covers R16.** **Given** an agent moves from bureau A to bureau B in the HR listing, **when** the next sync has run, **then** they can no longer open A's sector-perimeter sheets or private space and can open B's.
 - AE7. **Covers R17.** **Given** an agent in the HR listing signs in but belongs to no bureau, **when** they browse, **then** they see the common area and the synthesis perimeter only.
 - AE9. **Covers R6, R17.** **Given** a ProConnect user absent from the HR listing signs in, **when** they browse or search, **then** they see no content.
+- AE10. **Covers R7, R27.** **Given** sector bureau B owns a sector-perimeter sheet, **when** an agent of sector bureau A requests its Word or PowerPoint export, **then** they get no file, and the error reveals neither the sheet's title nor its content.
 - AE8. **Covers R22.** **Given** an editor who is not the administrator, **when** they save a page containing script code, **then** the code does not run.
 
 ### Success Criteria
@@ -164,6 +173,8 @@ At pilot kickoff, the project lead and the champions set a numeric target for ea
 - Automatic sync with the ministry directory (LDAP/Active Directory).
 - Field-level visibility within a single sheet.
 - Switching sign-in to the RIE ProConnect servers once those flows open.
+- Email notifications and digests (needs a ministry SMTP relay reachable from Nubonyxia), PDF export (needs a headless Chrome service), blog, task lists and page analytics.
+- Exporting several sheets into one PowerPoint deck, and embedding images from rich-text fields in exports.
 
 **Deferred to Follow-Up Work**
 
@@ -193,6 +204,7 @@ At pilot kickoff, the project lead and the champions set a numeric target for ea
 
 - Measure sheets keep XWiki's default commenting, so any reader of a sheet can comment on it. If comments should follow edit rights (R8), that is a one-line rights change in U5.
 - Numeric targets for the Success Criteria are set at pilot kickoff.
+- Which official Word and PowerPoint templates (ministry visual identity) the exports should use. U13 ships neutral French templates that the official ones replace without code changes.
 
 Planning-time questions from the brainstorm are resolved in the Planning Contract below. Execution-time unknowns are listed under Open Questions there.
 
@@ -206,8 +218,10 @@ Planning-time questions from the brainstorm are resolved in the Planning Contrac
 - OpenID Connect Authenticator (group claim and mapping settings): https://extensions.xwiki.org/xwiki/bin/view/Extension/OpenID%20Connect/OpenID%20Connect%20Authenticator/
 - Attachment storage hints (`xwiki.store.attachment.hint=hibernate`, applies to new uploads only): https://playgroundtemplate.xwiki.org/xwiki/bin/view/Documentation/AdminGuide/Attachments
 - REST XAR import known issues (XWIKI-20536, XWIKI-21071), which steer app deployment away from REST import: https://jira.xwiki.org/browse/XWIKI-20536
+- Diagram Application (draw.io): the free `org.xwiki.contrib:application-diagram` is at 1.3.1 (repository active in October 2026), requires XWiki 14.10+, is not supported by the XWiki core team, and bundles draw.io under GPLv3. No statement of 17.x support was found, and a forum report mentions incompatibilities on 16.x; the Pro edition is a paid XWiki SAS licence. https://extensions.xwiki.org/xwiki/bin/view/Extension/Diagram%20Application/ and https://playgroundtemplate.xwiki.org/xwiki/bin/view/Blog/DiagramApplication13Released
+- XWiki office export: only ODT is exposed, through a LibreOffice server; .docx is a known limitation and .pptx is not offered. https://forum.xwiki.org/t/how-to-bulk-export-all-pages-in-xwiki-to-either-docx-markdown-or-plain-text/11572 and https://forum.xwiki.org/t/office-and-onlyoffice-integration/10714/2
 
-Product Contract preservation: changed R6, R10, R17 — access limited to agents in the HR listing (user decision after document review); R16 — bureau type comes from the registry, not the HR listing (wording fix, user-approved); AE9 added. Planning-deferred questions are resolved in place into the Planning Contract, and Sources were extended.
+Product Contract preservation: changed R6, R10, R17 — access limited to agents in the HR listing (user decision after document review); R16 — bureau type comes from the registry, not the HR listing (wording fix, user-approved); AE9 added. Planning-deferred questions are resolved in place into the Planning Contract, and Sources were extended. Added R25–R27, AE10 and two Key Decisions after a gap analysis against Confluence (user decision, 2026-10-15); the deferred tools are listed under Deferred for later.
 
 ---
 
@@ -230,6 +244,10 @@ Product Contract preservation: changed R6, R10, R17 — access limited to agents
 - KTD13. **Operations tooling is a small Python package that drives XWiki through its REST API.** `tools/wikidb` handles provisioning, HR sync, bulk import and the acceptance tests. Python matches the team's Onyxia tooling, the Nexus PyPI mirror is proven on Nubonyxia, and scheduled Forge pipelines already run Python jobs. The tooling authenticates as a dedicated local admin account, `wikidb-robot`, separate from the break-glass admin. Its password lives only in a masked, protected Forge variable or a runner-mounted secret. Governs R16, R18.
 - KTD14. **The HR sync and backups run as scheduled Forge pipelines that read from and write to MinIO.** The scheduled-pipeline pattern is the one validated in `opsonium-boostedCSVD`. The administrator drops the HR listing (CSV: professional email, bureau code) into a MinIO bucket. Database dumps go to another bucket. Governs R16, R23.
 - KTD16. **The GitHub repository is public and carries no RIE specifics; Nubonyxia deployment files live only in a private Forge project.** That project holds the root `Dockerfile` (FROM the public base image by digest, plus the ministry CA), `.gitlab-ci.yml`, the scheduled-job definitions and every RIE hostname, proxy address and Nexus URL. U1 records how it obtains the operations tooling. Governs R20. (session-settled: user-directed — chosen over a private repository holding everything, and a public repository holding everything: the base image and tooling stay publicly buildable while RIE details stay off the internet.)
+- KTD17. **Exports are produced by a small Python service beside XWiki, reading each sheet with the requester's own session.** The service runs as its own single-replica Deployment and Service, and the ingress routes `/export/` on the wiki's hostname to it, so the browser sends the XWiki session cookie with the request. A separate workload keeps a failing export service from taking the wiki pod out of its Service, and an export update from restarting XWiki. The service forwards that cookie (or a Basic `Authorization` header, for tests) to XWiki through the wiki's in-cluster Service and never holds credentials of its own; `ExportData` checks the reader's view right on the requested sheet (KTD18). It writes .docx with `python-docx` and .pptx with `python-pptx` from template files. Governs R27. (Chosen over a Groovy page using Apache POI, which needs programming-rights code and POI jars in the XIP and is hard to test, over XWiki's LibreOffice export, which yields ODT and no .pptx, and over a second container in the wiki pod, whose readiness would gate the wiki's.)
+- KTD18. **XWiki assembles the export data; the service only lays it out.** A page `Mesures.Code.ExportData`, written by the administrator and rendered as the requesting user, returns one JSON document per sheet. Because XWiki checks rights on `ExportData` itself, not on the sheet named in its parameter, the page resolves the parameter to a reference under `Mesures`, checks the current user's view right on it explicitly, and answers 404 when the right is missing, the page does not exist or it carries no `MesureClass` object; one status for all three reveals nothing about which sheets exist. Rich-text fields are rendered through the sheet document's own `display(field, 'view')`, as `MesureSheet` does, so they run with the sheet author's rights and never with `ExportData`'s (R22). The JSON holds: title, identifier, bureau code and name, perimeter, the R1 fields with rich text rendered to HTML, the provenance blocks, and the last modification. The service converts that limited HTML (paragraphs, lists, emphasis, links, tables) into Word and PowerPoint structures. Field logic, such as the derived bureau and perimeter (KTD6), therefore stays in one place, next to the sheet. Governs R27.
+- KTD19. **Page templates are XWiki template providers in a `Modeles` space.** Every agent can read the space and only administrators can edit it. Each provider is offered in `Bureaux.*` and `Main`, never in `Mesures`, `Procedures`, `Glossaire` or `Annuaire`, whose pages come from their own forms. Governs R24, R25.
+- KTD20. **Diagrams use the free Diagram Application, packaged in the XIP like every other extension.** A diagram is a wiki page, so it inherits the rights of the space it is created in, not of the page that embeds it, and its data sits in PostgreSQL. Agents therefore get no edit right on the application's own space, so diagrams can only be created inside the space of the page that holds them. It is adopted only after U12 proves it works on 17.10 without internet. Governs R21, R26. (Chosen over the Pro edition, which needs a paid licence, and over text-based diagram macros, which agents would have to learn.)
 - KTD15. **SSPCloud uses a small dedicated Helm chart (`k8s/wikidb`) instead of wrapping the `shiny` chart.** XWiki needs a persistent volume, slow-start probes and about 2 GiB of heap, which the generic chart is not built for. The same chart is reused on Nubonyxia if U1 shows Helm deployment works there. Governs R20, R23.
 
 ### High-Level Technical Design
@@ -269,6 +287,8 @@ Content and rights layout (KTD6, KTD7). Each row is a space, and the rights are 
 | `Glossaire` | inherited | `GroupeDirection` |
 | `Annuaire.Bureaux.<B>` | inherited | `Groupe<B>` |
 | `Annuaire.Externes` | inherited | admins |
+| `Modeles` (page templates) | inherited | admins |
+| Diagram Application home space | inherited | admins |
 | `WikiDB` (registry, admin pages) | admins | admins |
 | `XWiki` group pages (`Groupe*`) | inherited | admins |
 | `Mesures.Code`, `Mesures.WebHome`, `Mesures.NouvelleMesure`, `Procedures.Code`, `Glossaire.Code`, `Annuaire.Code` | inherited | admins |
@@ -286,6 +306,24 @@ erDiagram
 
 `MESURE_OBJECT` holds the R1 fields: source key, creation date, legal vehicle, rationale, modification procedure, internal and external documentation. `PROVENANCE_OBJECT` holds the R2 fields: data item, sender, frequency, format, contact. A `BUREAU` registry entry holds a code, a name and a type (sector or synthesis).
 
+Export flow (KTD17, KTD18):
+
+```mermaid
+sequenceDiagram
+  participant B as Agent's browser
+  participant E as Export service (/export/)
+  participant X as XWiki (in-cluster Service)
+  B->>E: GET /export/Mesures/A/Secteur/M-0042.docx (session cookie)
+  E->>X: GET Mesures.Code.ExportData?sheet=... (same cookie)
+  alt reader may view the sheet
+    X-->>E: JSON (fields as HTML, provenance, place)
+    E-->>B: M-0042 - <title>.docx
+  else denied or missing
+    X-->>E: 302 to login (no session) or 404 (no right, missing, not a sheet)
+    E-->>B: 401 with a sign-in link, or 404, generic French message
+  end
+```
+
 ### Output Structure
 
 ```text
@@ -296,6 +334,7 @@ xwiki/
   Dockerfile.base                    # official image + XIP + config + entrypoint
   pom.xml                            # parent: XWiki 17.10.x versions
   app/                               # XAR module: wiki applications (XML pages)
+  mainwiki/                          # default-UI extension: flavor + OIDC + app (+ Diagram, U12)
   xip/                               # XIP module: flavor + OIDC + app
   config/                            # xwiki.cfg / xwiki.properties overrides
   entrypoint-wikidb.sh               # secrets-from-files, repository seeding
@@ -305,6 +344,8 @@ nubonyxia/
   feasibility.md                     # U1 findings
   scheduled.gitlab-ci.yml            # HR sync + backup jobs
 tools/wikidb/                        # Python: client, provision, hrsync, importer, backup
+tools/wikidb/export/                 # export service: server, docx/pptx writers, templates/
+export/Dockerfile                    # export service image (separate Deployment, KTD17)
 tests/unit/
 tests/acceptance/
 docs/runbooks/                       # deploy, restore, add-a-bureau, HR feed, import
@@ -314,7 +355,7 @@ pyproject.toml
 ### Open Questions (execution-time)
 
 - **Resolved by U1, blocking U3:** how the base image reaches Nubonyxia. The preferred route is a Forge build pulling from GHCR. If that fails, the fallbacks are Harbor proxy-caching GHCR, or committing the XIP through Git LFS and building the base image on the Forge.
-- **Resolved by U1, blocking U3:** whether deployment uses the platform template (only if it supports a PVC, a long startup probe and about 3 GiB of memory) or `helm` from a Nubonyxia VSCode running with Role admin.
+- **Resolved by U1, blocking U3:** whether deployment uses the platform template (only if it supports a PVC, a long startup probe, about 3 GiB of memory, and a second image deployed as its own workload under `/export` on the same hostname for U14) or `helm` from a Nubonyxia VSCode running with Role admin.
 - **Resolved by U1, blocking U4:** a `User-Agent` value the proxy accepts on Java's `CONNECT` request to the ProConnect hosts. Java appends `Java/<version>` to `http.agent`, so the exact string must be tested.
 - **Resolved by U1, blocking U10:** whether scheduled-job pods can reach the namespace's PostgreSQL service, and how the permanent directory is captured: a volume snapshot, a `kubectl exec` archive, or an image-and-database-only restore if U10 proves that path works.
 - **During U8:** whether XWiki honors group membership for a user reference that does not exist yet, i.e. an agent who has never logged in. If it does not, the sync records pending members and applies them after the first login.
@@ -337,12 +378,17 @@ pyproject.toml
 | The GitLab runner service is stopped, so scheduled jobs stay pending without failing | Each job records a last-success timestamp; the runbooks check it is under 48 hours old; the runner must stay running |
 | Rights mistakes leak sector content | U5 acceptance suite covers AE1–AE9 and is rerun after every deployment |
 | 17.10 support ends after 18.10 ships | Follow-up upgrade, rehearsed on SSPCloud first |
+| The Diagram Application breaks on 17.10 or calls the internet | U12 tests it first on dev, with network checks; if it fails, U12 stops and the product authority chooses between the Pro licence and dropping R26 |
+| Bundling draw.io (GPLv3) in the public image | Allowed for an open-source image; the image's licence notice lists it |
+| Long rich-text fields overflow a PowerPoint slide | The .pptx writer continues overflowing text on follow-on slides; nothing is truncated |
+| An export reveals what the reader cannot see | The service holds no credentials and forwards the reader's session (KTD17); AE10 is in the acceptance suite |
 | The ministry CA expires in August 2027 | Recopy `nubonyxia/mefr-ca.crt` (onyxia guide) |
 
 ### System-Wide Impact
 
 - **Auth boundary:** ProConnect becomes the wiki's only agent login. The break-glass admin and the test accounts on dev are the only local accounts.
 - **Data lifecycle:** All content lives in one PostgreSQL database, and extension state lives on the volume. Backups cover both (U10).
+- **Workloads:** The namespace gains a separate, stateless export Deployment and Service (KTD17) and an `/export` ingress path. The wiki keeps working if it fails, and updating it does not restart XWiki.
 - **Shared infrastructure:** The namespace on each platform gains a PostgreSQL instance, a PVC, MinIO buckets and a GitLab runner schedule.
 
 ### Operational / Rollout Notes
@@ -354,6 +400,7 @@ Human steps outside the implementer's reach, all needed before the pilot opens:
 3. A regular HR listing feed into the MinIO bucket, with professional emails.
 4. The bureau registry is filled (codes, names, sector or synthesis type), and a champion is named for each pilot bureau (R19).
 5. The champions complete their imported sheets, and then the bureaux' groups are opened (F4).
+6. The communication team supplies the official Word and PowerPoint templates, if the exports must follow the ministry's visual identity (U13).
 
 ---
 
@@ -679,18 +726,153 @@ Human steps outside the implementer's reach, all needed before the pilot opens:
 
 **Verification:** One nightly backup lands in MinIO on Nubonyxia, and the recorded rehearsal shows a passing visibility suite after restore.
 
+### U11. French page templates
+
+**Goal:** Agents start meeting minutes, briefing notes and decision records from French templates.
+
+**Requirements:** R24, R25; KTD19
+
+**Dependencies:** U5
+
+**Files:**
+- `xwiki/app/src/main/resources/Modeles/WebHome.xml`, `Modeles/CompteRendu.xml`, `Modeles/NoteBreve.xml`, `Modeles/ReleveDecision.xml` (template pages)
+- `xwiki/app/src/main/resources/Modeles/Code/*TemplateProvider.xml` (one provider per template)
+- `tools/wikidb/provision.py` (adds the `Modeles` space with administrator-only edit)
+- `tests/unit/test_provision.py`, `tests/acceptance/test_templates.py`
+
+**Approach:**
+1. Each template is ordinary wiki content with French headings and placeholder prompts:
+   - **Compte rendu de réunion:** date, participants, agenda, decisions, actions with owner and due date.
+   - **Note brève:** subject, key messages, context, analysis, proposal.
+   - **Relevé de décision:** context, decision, date and decision-maker, consequences, linked measure sheets.
+2. Each provider restricts creation to `Bureaux` and `Main` (KTD19).
+3. Provision adds `Modeles` to the target state like the other application homes.
+
+**Patterns to follow:** The template providers shipped with the Standard flavor (`XWiki.TemplateProviderClass`), and the existing provision `Space` entries.
+
+**Test scenarios:**
+- An agent of bureau A creating a page in `Bureaux.A` is offered the three templates, and the page created from "Compte rendu de réunion" has its headings.
+- Creating a page under `Mesures.A.Secteur` offers none of the three templates.
+- An agent gets 403 editing a page in `Modeles`.
+- Provision with `Modeles` already configured reports no change (unit).
+
+**Verification:** The tests pass on dev, and the three templates appear in French in the "Créer" dialog.
+
+### U12. Diagrams
+
+**Goal:** Agents draw data-flow and organisation diagrams in wiki pages, offline.
+
+**Requirements:** R21, R26; KTD3, KTD20
+
+**Dependencies:** U2, U5
+
+**Files:**
+- `xwiki/mainwiki/pom.xml` (adds `org.xwiki.contrib:application-diagram` to the default UI)
+- `tools/wikidb/provision.py` (administrator-only edit on the application's own space, KTD20)
+- `tests/unit/test_provision.py`, `tests/acceptance/test_diagrams.py`
+
+**Approach:**
+1. Add the Diagram Application to the XIP and deploy it on dev.
+2. Check it on 17.10 before relying on it: create a diagram, edit it, view it, insert it in a page, and confirm that the editor loads every resource from the wiki and none from an internet host.
+3. If any check fails, stop and report to the product authority (Risks).
+
+**Execution note:** Mostly packaging. Prove it with an install-and-use smoke check on dev before writing the acceptance tests.
+
+**Test scenarios:**
+- A diagram created by an agent of A in `Bureaux.A` is viewable and editable by another agent of A, none of them holding script right (R22).
+- An agent cannot create a diagram through the application's own entry point in its home space (403), so every diagram lives in the space of the page that holds it.
+- An agent of B gets no content from that diagram page, through view or REST.
+- The diagram editor page references no host other than the wiki's own.
+- After an image upgrade, an existing diagram still opens.
+
+**Verification:** The tests pass on dev, and the offline cold start (Verification Contract) still reaches the login page with the application installed.
+
+### U13. Word and PowerPoint export of measure sheets
+
+**Goal:** A reader downloads a measure sheet as .docx or .pptx from the sheet itself.
+
+**Requirements:** R7–R9, R27; KTD6, KTD17, KTD18; AE10
+
+**Dependencies:** U6
+
+**Files:**
+- `xwiki/app/src/main/resources/Mesures/Code/ExportData.xml` (JSON for one sheet, rendered as the requester)
+- `xwiki/app/src/main/resources/Mesures/Code/MesureSheet.xml` (adds "Exporter : Word | PowerPoint" links in view mode)
+- `tools/wikidb/export/server.py`, `docx_writer.py`, `pptx_writer.py`, `html.py` (limited HTML to Office structures)
+- `tools/wikidb/export/templates/fiche.docx`, `fiche.pptx` (neutral French templates)
+- `pyproject.toml` (an `export` dependency group: web server, `python-docx`, `python-pptx`)
+- `tests/unit/test_export.py`, `tests/acceptance/test_export.py`
+
+**Approach:**
+1. `ExportData` implements the KTD18 checks: a reference outside `Mesures`, a sheet the reader cannot view, a missing page and a page without `MesureClass` all return 404.
+2. The service's single route takes the sheet path and the format. It calls `ExportData` with the incoming cookie and `Authorization` header and does not follow redirects, then streams the file.
+3. A 3xx or 401 from XWiki means no valid session: the service answers 401 with a French message linking to the wiki's sign-in, so an agent whose session expired signs in again. Any other non-200 status is returned as is, with a generic French message that names nothing.
+4. XWiki renders internal links as paths. The service rewrites every relative or in-cluster href in the JSON to the public origin of the incoming request (forwarded host and scheme from the ingress), so links work in the downloaded file.
+5. The Word document follows the sheet: title, identification table (identifier, bureau, perimeter, creation date, legal vehicle), then one heading per text field, a provenance table and the last modification.
+6. The presentation opens with a title slide (title, bureau, perimeter, date). The following slides cover rationale and modification procedure, documentation, and a provenance table. Text that does not fit continues on follow-on slides.
+7. File names are `<identifier> - <title>.<ext>`, with characters invalid in Windows file names replaced.
+8. Templates are read from a directory that a mounted volume can override, so the official ones (Outstanding Questions) replace them without a rebuild.
+
+**Patterns to follow:** `tools/wikidb/client.py` for HTTP and settings (KTD11); `Mesures.Code.MesureMacros` for the derived place and the field order.
+
+**Test scenarios:**
+- Covers AE10. An agent of A requesting the .docx and the .pptx of B's sector sheet gets 403 or 404, and the response body contains neither the sheet's title nor its identifier.
+- A guest request, and a request with an expired session, get 401 and no file, without the service following the redirect to ProConnect.
+- `sheet=` pointing at `XWiki.XWikiPreferences`, at a page in `Bureaux.B`, or at a missing `Mesures` page returns 404 with no content, the same answer as B's sector sheet.
+- A non-administrator saves a Velocity snippet in a sheet's rationale; the exported .docx contains the snippet's text or a script-right error, never its output (R22).
+- A provenance sender linked to an `Annuaire` entry becomes a hyperlink to the public wiki host in the .docx (acceptance).
+- An agent of A exporting their own complete sheet gets a .docx whose text contains every R1 field value, both provenance blocks, the bureau name and "Sectoriel" (acceptance; parsed back with `python-docx`).
+- A synthesis-bureau agent can export B's sector sheet (R7).
+- The .pptx of the same sheet opens with `python-pptx`, its first slide carries the title, and its provenance table has one row per block.
+- A rich-text field with a bulleted list and a link becomes a Word list and a working hyperlink (unit, from fixed JSON).
+- A 6,000-character rationale spreads over several slides with no text lost (unit).
+- A title containing `/`, `:` and quotes yields a valid file name (unit).
+- A request for a page that is not a measure sheet gets 404.
+
+**Verification:** The tests pass on dev, and both files open in Word and PowerPoint (checked by hand once and recorded in the runbook).
+
+### U14. Export service packaging and deployment
+
+**Goal:** The export service ships with every wiki deployment on both platforms.
+
+**Requirements:** R21, R27; KTD2, KTD15, KTD16, KTD17
+
+**Dependencies:** U3, U13
+
+**Files:**
+- `export/Dockerfile` (Python slim image, non-root, service only)
+- `.github/workflows/build-image.yml` (builds and pushes `ghcr.io/paquitopg/wikidb-export` with the same tags; the `paths` filter gains `export/**`, `tools/wikidb/export/**` and `pyproject.toml`, and each image builds only when its own inputs changed)
+- `k8s/wikidb/templates/export-deployment.yaml`, `k8s/wikidb/templates/export-service.yaml`, `k8s/wikidb/templates/ingress.yaml`, `k8s/wikidb/values.yaml` (export workload, `/export` path, image digest, optional templates volume)
+- `docs/runbooks/deploy.md` (both digests; the Forge project rebuilds the export image FROM its GHCR digest plus the ministry CA, as for the wiki)
+
+**Approach:**
+1. The export image is built on the internet side, so Nubonyxia needs no Python package mirror (KTD2).
+2. The chart adds the export Deployment and Service with a readiness probe on a health route. The ingress routes `/export` on the same host, which keeps the request same-origin. The service reaches XWiki through the wiki's Service name.
+3. On Nubonyxia, exports need the Helm path or a platform template that passes the U1 criterion (Open Questions); the Forge project's `.gitlab-ci.yml` gets its own job that rebuilds the export image FROM its GHCR digest and pushes it to Harbor.
+4. Disabling the export workload in values leaves the wiki unchanged, and the export links then show a French "export indisponible" page.
+
+**Execution note:** Packaging and configuration. Prove it with the chart render gate and a deployed smoke export on dev.
+
+**Test scenarios:**
+- The chart renders with and without the export workload and passes the server-side dry run.
+- With the export Deployment scaled to zero, the wiki still serves pages (its readiness does not depend on the export service).
+- On dev after deployment, an agent's export link returns a .docx with a 200 status through the ingress.
+
+**Verification:** The CI run publishes both images, and the dev deployment serves exports through the ingress.
+
 ---
 
 ## Verification Contract
 
 | Gate | Command / check | Applies to |
 |---|---|---|
-| Python unit tests | `pytest tests/unit` | U5, U8, U9, U10 |
+| Python unit tests | `pytest tests/unit` | U5, U8, U9, U10, U11, U13 |
 | Entrypoint tests | `tests/unit/test_entrypoint.sh` | U2 |
-| Wiki app build | `mvn -f xwiki/pom.xml package` and `mvn -f xwiki/pom.xml xar:verify` (formatted XML) | U2, U4–U7 |
-| Chart render | `helm template wikidb k8s/wikidb -f k8s/wikidb/values-sspcloud.yaml \| kubectl apply --dry-run=server -f -` | U3 |
-| Acceptance suite on dev | `pytest tests/acceptance --base-url <dev ingress>` with the fictitious bureaux | U4–U9; rerun after every deployment |
-| Offline cold start | Fresh namespace without egress reaches the French login page | U2, U3 |
+| Wiki app build | `mvn -f xwiki/pom.xml package` and `mvn -f xwiki/pom.xml xar:verify` (formatted XML) | U2, U4–U7, U11–U13 |
+| Chart render | `helm template wikidb k8s/wikidb -f k8s/wikidb/values-sspcloud.yaml \| kubectl apply --dry-run=server -f -` | U3, U14 |
+| Acceptance suite on dev | `pytest tests/acceptance --base-url <dev ingress>` with the fictitious bureaux | U4–U9, U11–U13; rerun after every deployment |
+| Offline cold start | Fresh namespace without egress reaches the French login page | U2, U3, U12 |
+| Office files open | One exported .docx and .pptx opened in Word and PowerPoint, recorded in the runbook | U13 |
 | Restore rehearsal | `docs/runbooks/restore.md` executed, acceptance suite green afterwards | U10 |
 
 Acceptance tests never run against Nubonyxia production data. On Nubonyxia, verification is a smoke check: login, one sheet visible as expected for the operator's own bureau.
@@ -699,7 +881,7 @@ Acceptance tests never run against Nubonyxia production data. On Nubonyxia, veri
 
 - Every unit's Verification is met, and the gates above pass for the units touched.
 - `nubonyxia/feasibility.md` answers all U1 questions, and no stop condition fired, or the product authority accepted the fallback.
-- AE1–AE9 each have a passing automated test on dev.
+- AE1–AE10 each have a passing automated test on dev.
 - The runbooks exist for deploy, ProConnect, adding a bureau, the HR feed, import, editing wiki apps and restore.
 - No secret in Git, `values*.yaml` or logs. Probe artifacts from U1 and abandoned experiments are removed from the tree.
 - The Operational / Rollout Notes list is handed to the product authority with each item's status.
