@@ -1,0 +1,73 @@
+## WikiDB skin: DSFR header in place of Flamingo's top bar (DSFR plan KTD3).
+## Based on flamingo/menus_view.vm at xwiki-platform 17.10.13: keep the two top-menu UI extension points and the
+## drawer, so search, notifications, the user menu and Administration keep working (R5). On an XWiki upgrade, diff
+## Flamingo's menus_view.vm and carry its changes here (docs/runbooks/deploy.md).
+#if ($isInServletMode)## Visible only in a page
+  #template("menus_macros.vm")
+  #template("wikidb_dsfr.vm")
+  #set ($wikidbSection = $doc.documentReference.spaceReferences.get(0).name)
+  <header role="banner" class="fr-header" id="wikidbHeader">
+    <div class="fr-header__body">
+      <div class="fr-container">
+        <div class="fr-header__body-row">
+          <div class="fr-header__brand fr-enlarge-link">
+            <div class="fr-header__brand-top">
+              <div class="fr-header__logo">
+                <p class="fr-logo">$wikidbLogo</p>
+              </div>
+              <div class="fr-header__navbar">
+                <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="wikidbMenu"
+                  aria-haspopup="menu" id="wikidbMenuButton" title="Menu">Menu</button>
+              </div>
+            </div>
+            <div class="fr-header__service">
+              <a href="$xwiki.getURL('Main.WebHome')" title="Accueil - $escapetool.xml($wikidbService)">
+                <p class="fr-header__service-title">$escapetool.xml($wikidbService)</p>
+              </a>
+              <p class="fr-header__service-tagline">$escapetool.xml($wikidbTagline)</p>
+            </div>
+          </div>
+          ## XWiki's own tools stay outside .fr-header__tools: the DSFR hides that area on small screens and clones
+          ## its links into the menu, which would break the dropdowns' scripts (success criterion at 360 px).
+          <div class="wikidb-xwikitools" id="xwikimainmenu">
+            #xwikitopmenuleftstart()
+              #displaySimpleSecureUIX('org.xwiki.platform.topmenu.left')
+            #xwikitopmenuleftend()
+            #xwikitopmenurightstart()
+              #displaySimpleSecureUIX('org.xwiki.platform.topmenu.right', 'revert')
+              #displayDrawerActivator()
+            #xwikitopmenurightend()
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fr-header__menu fr-modal" id="wikidbMenu" aria-labelledby="wikidbMenuButton">
+      <div class="fr-container">
+        <button class="fr-btn--close fr-btn" aria-controls="wikidbMenu" title="Fermer">Fermer</button>
+        <div class="fr-header__menu-links"></div>
+        <nav class="fr-nav" id="wikidbNavigation" role="navigation" aria-label="Menu principal">
+          <ul class="fr-nav__list">
+            #foreach ($entry in [['Mesures', 'Mesures'], ['Procedures', 'Procédures'], ['Glossaire', 'Glossaire'],
+                ['Annuaire', 'Annuaire'], ['Modeles', 'Modèles']])
+              <li class="fr-nav__item">
+                <a class="fr-nav__link" href="$xwiki.getURL("${entry[0]}.WebHome")"#if ($wikidbSection == $entry[0]) aria-current="true"#end>$escapetool.xml($entry[1])</a>
+              </li>
+            #end
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+#end
+#**
+ * Display the drawer activator with an humberger-style icon (copied from flamingo/menus_view.vm).
+ *#
+#macro(displayDrawerActivator)
+  <li>
+    <button type="button" id="tmDrawerActivator" class="btn btn-link icon-navbar drawer-opener" aria-controls="tmDrawer"
+      aria-expanded="false" title="$escapetool.xml($services.localization.render('core.menu.drawer'))"
+      ><span class="sr-only">$escapetool.xml($services.localization.render('core.menu.toggleNavigation'))</span
+      >$services.icon.renderHTML('menu')</button>
+    #template("drawer.vm")
+  </li>
+#end

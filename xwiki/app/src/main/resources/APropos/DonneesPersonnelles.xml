@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="APropos.DonneesPersonnelles" locale="">
+  <web>APropos</web>
+  <name>DonneesPersonnelles</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>APropos.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Données personnelles</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>Pour la connexion par ProConnect, le wiki reçoit l'adresse électronique, le prénom et le nom de l'agent. L'accès est limité aux agents de la Direction du Budget figurant dans la liste des effectifs.
+
+{{warning}}Responsable du traitement, durées de conservation et exercice des droits : texte à fournir par la Direction du Budget.{{/warning}}</content>
+</xwikidoc>

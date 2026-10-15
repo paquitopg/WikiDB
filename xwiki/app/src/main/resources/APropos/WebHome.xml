@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="APropos.WebHome" locale="">
+  <web>APropos</web>
+  <name>WebHome</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Main.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>À propos du wiki</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>Informations sur le wiki de la Direction du Budget.
+
+* [[Accessibilité&gt;&gt;APropos.Accessibilite]]
+* [[Mentions légales&gt;&gt;APropos.MentionsLegales]]
+* [[Données personnelles&gt;&gt;APropos.DonneesPersonnelles]]</content>
+</xwikidoc>

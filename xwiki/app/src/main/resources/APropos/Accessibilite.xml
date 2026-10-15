@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="APropos.Accessibilite" locale="">
+  <web>APropos</web>
+  <name>Accessibilite</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>APropos.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Accessibilité</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>La Direction du Budget s'engage à rendre son wiki accessible conformément à l'article 47 de la loi n° 2005-102 du 11 février 2005.
+
+== État de conformité ==
+
+Le wiki de la Direction du Budget n'a pas encore fait l'objet d'un audit de conformité au référentiel général d'amélioration de l'accessibilité (RGAA). Il est donc **non conforme**.
+
+== Retour d'information et contact ==
+
+{{warning}}Contact à fournir par la Direction du Budget.{{/warning}}</content>
+</xwikidoc>

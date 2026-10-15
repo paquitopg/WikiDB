@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="APropos.MentionsLegales" locale="">
+  <web>APropos</web>
+  <name>MentionsLegales</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>APropos.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Mentions légales</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>== Éditeur ==
+
+Direction du Budget.
+
+{{warning}}Directeur de la publication, hébergement et contact à fournir par la Direction du Budget.{{/warning}}
+
+== Système de design ==
+
+L'interface utilise le Système de Design de l'État (DSFR), distribué sous licence Etalab 2.0.</content>
+</xwikidoc>

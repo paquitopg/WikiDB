@@ -1,0 +1,37 @@
+## WikiDB skin: DSFR footer in place of Flamingo's (DSFR plan KTD3), based on flamingo/footer.vm at 17.10.13.
+#if ($isInServletMode)## Visible only in a page
+#template("wikidb_dsfr.vm")
+<footer class="fr-footer" role="contentinfo" id="wikidbFooter">
+  <div class="fr-container">
+    <div class="fr-footer__body">
+      <div class="fr-footer__brand fr-enlarge-link">
+        <a href="$xwiki.getURL('Main.WebHome')" title="Retour à l'accueil - $escapetool.xml($wikidbService)">
+          <p class="fr-logo">$wikidbLogo</p>
+        </a>
+      </div>
+      <div class="fr-footer__content">
+        <p class="fr-footer__content-desc">Wiki interne de la Direction du Budget, réservé à ses agents.</p>
+      </div>
+    </div>
+    <div class="fr-footer__bottom">
+      <ul class="fr-footer__bottom-list">
+        <li class="fr-footer__bottom-item">
+          <a class="fr-footer__bottom-link" href="$xwiki.getURL('APropos.Accessibilite')">Accessibilité : non conforme</a>
+        </li>
+        <li class="fr-footer__bottom-item">
+          <a class="fr-footer__bottom-link" href="$xwiki.getURL('APropos.MentionsLegales')">Mentions légales</a>
+        </li>
+        <li class="fr-footer__bottom-item">
+          <a class="fr-footer__bottom-link" href="$xwiki.getURL('APropos.DonneesPersonnelles')">Données personnelles</a>
+        </li>
+      </ul>
+      <div class="fr-footer__bottom-copy">
+        <p>Interface conforme au Système de Design de l'État (DSFR), licence Etalab 2.0.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+## DSFR behaviour for the header menu and modals (KTD5); the nomodule build serves browsers without ES modules.
+<script type="module" src="$services.webjars.url($dsfr, 'dist/dsfr.module.min.js')"></script>
+<script nomodule src="$services.webjars.url($dsfr, 'dist/dsfr.nomodule.min.js')"></script>
+#end

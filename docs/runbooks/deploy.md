@@ -61,6 +61,19 @@ notes (KTD16).
 5. Archive the volume's permanent directory, which records the newly installed extensions
    ([restore.md](restore.md#backups)).
 
+### DSFR skin
+
+The skin `WikiDB.Code.Skin` overrides two Flamingo templates; their sources are `xwiki/app/src/main/skin/`.
+
+- **XWiki upgrade:** diff Flamingo's `menus_view.vm` and `footer.vm` between the old and new platform tags
+  (`xwiki-platform-flamingo-skin-resources/src/main/resources/flamingo/` in xwiki-platform) and carry the changes into
+  the overrides. The acceptance tests in `tests/acceptance/test_appearance.py` fail if search or the user menu leave the
+  header.
+- **DSFR upgrade:** set `dsfr.version` and `dsfr.sha512` in `xwiki/pom.xml` from the npm registry
+  (`npm view @gouvfr/dsfr@<version> dist.integrity`, base64 to hex), choosing a release at least two weeks old. Then
+  walk the visual checklist of the DSFR plan on dev: home, a measure sheet in view and edit, search results, the login
+  page, Administration, a dropdown and a modal, on desktop and at 360 px.
+
 ## Rollback
 
 `helm rollback wikidb <revision>` returns to the previous digests. Application pages keep the newer version (XWiki

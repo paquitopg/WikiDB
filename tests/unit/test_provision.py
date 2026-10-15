@@ -70,13 +70,15 @@ def test_wiki_level_rules_restrict_access_to_direction_agents_and_scripts_to_adm
     assert Rule(("XWiki.XWikiAdminGroup",), ("admin", "programming")) in wiki_rules
     prefs = wiki.objs("XWiki.XWikiPreferences", PREFERENCES_CLASS)[0]
     assert prefs["authenticate_view"] == "1" and prefs["default_language"] == "fr"
+    assert prefs["skin"] == "WikiDB.Code.Skin"          # DSFR skin, replacing the flavor's XWiki.DefaultSkin
 
 
 def test_application_code_and_group_pages_are_editable_by_admins_only():
     wiki = wiki_with_flavor()
     apply(wiki, target_state([A]))
     admins = {Rule(("XWiki.XWikiAdminGroup",), ("delete", "edit"))}
-    for space in ("Mesures", "Procedures", "Annuaire", "Glossaire.Code", "XWiki", "Mesures.A", "Modeles", "Diagram"):
+    for space in ("Mesures", "Procedures", "Annuaire", "Glossaire.Code", "XWiki", "Mesures.A", "Modeles", "Diagram",
+                  "APropos"):
         assert rules(wiki, space) == admins, space
 
 

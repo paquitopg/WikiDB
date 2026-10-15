@@ -1,0 +1,20 @@
+## WikiDB skin: what the DSFR header and footer share (DSFR plan KTD4, KTD6). Included by menus_view.vm and
+## footer.vm, so a page that hides the main menu still gets the DSFR stylesheets and the bloc-marque in its footer.
+## Bloc-marque and service title: the one place to edit after a ministry rename.
+## shortcut: generic ministry wording until the communication service confirms the current one (plan Q1).
+#set ($wikidbMarque = ['Ministère', "de l'Économie", 'et des Finances'])
+#set ($wikidbService = 'Direction du Budget')
+#set ($wikidbTagline = 'Wiki des mesures et des procédures')
+#set ($wikidbLogo = '')
+#foreach ($line in $wikidbMarque)
+  #set ($wikidbLogo = "$wikidbLogo#if ($foreach.index > 0)<br>#end$escapetool.xml($line)")
+#end
+## DSFR files from the offline webjar, then the bridge stylesheet (linkx keeps each URL once and in this order).
+#set ($dsfr = 'fr.finances.budget.wikidb:wikidb-dsfr')
+#foreach ($css in ['core/core', 'component/link/link', 'component/button/button', 'component/logo/logo',
+    'component/modal/modal', 'component/navigation/navigation', 'component/header/header',
+    'component/footer/footer', 'component/alert/alert', 'component/breadcrumb/breadcrumb',
+    'component/form/form', 'component/input/input', 'component/table/table', 'component/tag/tag'])
+  $xwiki.linkx.use($services.webjars.url($dsfr, "dist/${css}.min.css"), {'type': 'text/css', 'rel': 'stylesheet'})
+#end
+$xwiki.linkx.use($services.webjars.url($dsfr, 'wikidb/dsfr-bridge.css'), {'type': 'text/css', 'rel': 'stylesheet'})
