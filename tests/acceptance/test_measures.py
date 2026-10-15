@@ -6,8 +6,6 @@ Sheets are created through the real creation form (Mesures.NouvelleMesure) and d
 import re
 from concurrent.futures import ThreadPoolExecutor
 
-import pytest
-
 from wikidb.client import PageRef, XWikiClient
 from wikidb.measures import FIELDS, MESURE_CLASS, PROVENANCE_CLASS, identifier_number
 
@@ -55,15 +53,6 @@ def created_page(response) -> PageRef:
 
 def client_for(agent) -> XWikiClient:
     return XWikiClient(agent.base_url, *agent.session.auth)
-
-
-@pytest.fixture(scope="module")
-def made(robot):
-    """Pages created by the tests of this module, deleted afterwards."""
-    pages: list[PageRef] = []
-    yield pages
-    for page in pages:
-        robot.delete_page(page)
 
 
 def test_creation_places_the_sheet_under_the_bureau_and_perimeter(world, made, robot):

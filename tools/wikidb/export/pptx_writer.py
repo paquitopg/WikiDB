@@ -14,11 +14,11 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 
 from .html import Paragraph, Run, Table
-from .sheet import PROVENANCE_COLUMNS, Sheet
+from .sheet import NOT_FILLED, PROVENANCE_COLUMNS, Sheet
 
 SLIDE_BUDGET = 900          # characters of body text per slide at 16 pt
 PROVENANCE_ROWS = 8         # provenance rows per slide
-TITLE_LAYOUT, CONTENT_LAYOUT = 0, 1
+TITLE_LAYOUT, CONTENT_LAYOUT, TITLE_ONLY_LAYOUT = 0, 1, 5    # default template layouts
 
 
 def _lines(blocks) -> list[tuple[list[Run], int, bool]]:
@@ -55,7 +55,7 @@ def _pages(lines, budget: int = SLIDE_BUDGET):
             used += size
     if page:
         pages.append(page)
-    return pages or [[([Run("Non renseigné.", italic=True)], 0, False)]]
+    return pages or [[([Run(NOT_FILLED, italic=True)], 0, False)]]
 
 
 def _content_slide(prs, title: str):
@@ -85,8 +85,9 @@ def _section(prs, title: str, blocks):
 
 
 def build(sheet: Sheet, template: Path | None = None) -> bytes:
-    prs = Presentation(str(template)) if template and template.exists() else Presentation()
-    if not (template and template.exists()):
+    use_template = bool(template and template.exists())
+    prs = Presentation(str(template)) if use_template else Presentation()
+    if not use_template:
         prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
     prs.core_properties.title = f"{sheet.identifier} - {sheet.title}"
 
@@ -106,13 +107,13 @@ def build(sheet: Sheet, template: Path | None = None) -> bytes:
     for name in ("documentationInterne", "documentationExterne"):
         if name in sheet.fields:
             documentation.append(Paragraph([Run(sheet.fields[name].label, bold=True)]))
-            documentation += sheet.fields[name].blocks or [Paragraph([Run("Non renseigné.", italic=True)])]
+            documentation += sheet.fields[name].blocks or [Paragraph([Run(NOT_FILLED, italic=True)])]
     _section(prs, "Documentation", documentation)
 
     rows = sheet.provenances or [None]
     for start in range(0, len(rows), PROVENANCE_ROWS):
         title = "Provenance des données" + (" (suite)" if start else "")
-        slide = prs.slides.add_slide(prs.slide_layouts[5])       # title only
+        slide = prs.slides.add_slide(prs.slide_layouts[TITLE_ONLY_LAYOUT])
         slide.shapes.title.text = title
         chunk = rows[start:start + PROVENANCE_ROWS]
         if chunk == [None]:

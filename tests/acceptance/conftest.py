@@ -131,6 +131,15 @@ def world(base_url, robot):
     return {"agents": agents, "pages": pages}
 
 
+@pytest.fixture(scope="module")
+def made(robot):
+    """Pages a test module creates, deleted by the robot after the module."""
+    pages: list[PageRef] = []
+    yield pages
+    for page in pages:
+        robot.delete_page(page)
+
+
 def robot_search(base_url, robot, word) -> bool:
     r = robot.session.get(f"{base_url.rstrip('/')}/rest/wikis/query", params={"q": word, "type": "solr"})
     return r.status_code == 200 and bool(r.json().get("searchResults"))

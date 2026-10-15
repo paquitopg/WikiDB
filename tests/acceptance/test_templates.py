@@ -5,7 +5,8 @@ import secrets
 
 import pytest
 
-from wikidb.client import PageRef, XWikiClient
+from test_measures import client_for
+from wikidb.client import PageRef
 
 PROVIDERS = ("Modeles.Code.CompteRenduTemplateProvider", "Modeles.Code.NoteBreveTemplateProvider",
              "Modeles.Code.ReleveDecisionTemplateProvider")
@@ -24,7 +25,7 @@ def created(world):
     yield pages
     a = world["agents"]["test-agent-a"]
     for page in pages:
-        XWikiClient(a.base_url, *a.session.auth).delete_page(page)
+        client_for(a).delete_page(page)
 
 
 def test_templates_are_offered_in_a_bureau_space_but_not_under_measures(world):

@@ -10,8 +10,8 @@ from docx.opc.constants import RELATIONSHIP_TYPE
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-from .html import Paragraph, Run, Table
-from .sheet import IDENTIFICATION, PROVENANCE_COLUMNS, SECTIONS, Sheet
+from .html import Run, Table
+from .sheet import IDENTIFICATION, NOT_FILLED, PROVENANCE_COLUMNS, SECTIONS, Sheet
 
 
 def _hyperlink(paragraph, url: str, text: str, bold=False, italic=False):
@@ -48,12 +48,12 @@ def _runs(paragraph, runs: list[Run]):
 
 
 def _style(document, name: str, fallback: str = "Normal") -> str:
-    return name if name in [s.name for s in document.styles] else fallback
+    return name if name in document.styles else fallback
 
 
 def _blocks(document, blocks):
     if not blocks:
-        document.add_paragraph().add_run("Non renseigné.").italic = True
+        document.add_paragraph().add_run(NOT_FILLED).italic = True
         return
     for block in blocks:
         if isinstance(block, Table):

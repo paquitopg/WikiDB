@@ -53,7 +53,8 @@ def absolute_url(href: str, public_origin: str, internal_origins: tuple[str, ...
 
 
 class _Parser(HTMLParser):
-    BLOCK_TAGS = {"p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "pre", "blockquote"}
+    HEADINGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
+    BLOCK_TAGS = {"p", "div", "pre", "blockquote"} | HEADINGS
 
     def __init__(self, public_origin: str, internal_origins: tuple[str, ...]):
         super().__init__(convert_charrefs=True)
@@ -88,7 +89,7 @@ class _Parser(HTMLParser):
             return
         if tag in self.BLOCK_TAGS:
             self._close()
-            self.current = Paragraph(heading=tag.startswith("h") and tag != "hr")
+            self.current = Paragraph(heading=tag in self.HEADINGS)
         elif tag in ("ul", "ol"):
             self._close()
             self.lists.append("number" if tag == "ol" else "bullet")

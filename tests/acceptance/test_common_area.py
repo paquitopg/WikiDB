@@ -16,17 +16,8 @@ TERME = "Glossaire.Code.TermeClass"
 ENTREE = "Annuaire.Code.BureauEntreeClass"
 
 
-@pytest.fixture
-def made(robot):
-    pages: list[PageRef] = []
-    yield pages
-    for page in pages:
-        robot.delete_page(page)
-
-
 def _labels(agent, page: PageRef) -> set[str]:
-    path = "/".join(page.spaces) + "/" + page.name
-    text = agent.session.get(f"{agent.base_url}/bin/view/{path}", headers={"Accept": "text/html"}).text
+    text = agent.view_html(page).text
     names = set()
     for config in re.findall(r'data-config="([^"]*)"', text):
         names |= {p.get("name") for p in json.loads(html.unescape(config))["meta"]["propertyDescriptors"]}

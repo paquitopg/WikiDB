@@ -12,6 +12,7 @@ IDENTIFICATION = ("dateCreation", "vecteurJuridique", "cleSource")
 SECTIONS = ("raisonEtre", "modalitesModification", "documentationInterne", "documentationExterne")
 PROVENANCE_COLUMNS = (("donnee", "Donnée"), ("emetteur", "Émetteur"), ("frequence", "Fréquence"),
                       ("format", "Forme"), ("contact", "Contact"))
+NOT_FILLED = "Non renseigné."
 _FORBIDDEN = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 
 
@@ -75,4 +76,3 @@ def from_export_data(data: dict, public_origin: str, internal_origins: tuple[str
         provenances=provenances,
         last_modified=f"{last.get('date', '')} par {last.get('author', '')}".strip(),
     )
-

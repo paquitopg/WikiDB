@@ -51,7 +51,6 @@ def test_every_listed_agent_is_in_the_direction_group_and_unlisted_agents_leave_
     assert wiki.members("XWiki.GroupeA") == set()
 
 
-
 def test_agent_listed_without_bureau_joins_only_the_direction_group():
     """R17, AE7: a Direction agent in no bureau reads the common area and the synthesis perimeter only."""
     wiki = provisioned()

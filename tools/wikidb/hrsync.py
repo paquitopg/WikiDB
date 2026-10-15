@@ -1,7 +1,7 @@
 """HR listing -> GroupeDirection and bureau group membership (U8; R16, R17, KTD9, KTD14).
 
-The listing is a CSV with two columns, `email` and `bureau`; an empty bureau means a Direction agent in no bureau. A file that fails any check is rejected whole and
-membership is left unchanged.
+The listing is a CSV with two columns, `email` and `bureau`; an empty bureau means a Direction agent in no
+bureau. A file that fails any check is rejected whole and membership is left unchanged.
 """
 
 from __future__ import annotations

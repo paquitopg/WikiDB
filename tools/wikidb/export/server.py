@@ -94,7 +94,7 @@ def create_app(internal_url: str | None = None, templates: Path | None = None,
         directory = template_dir()
         content = writer.build(sheet, directory / template_name if directory else None)
         name = sheet.file_name(extension)
-        ascii_name = name.encode("ascii", "replace").decode().replace("?", "_").replace('"', "")
+        ascii_name = name.encode("ascii", "replace").decode().replace("?", "_")      # file_name() already removed quotes
         disposition = f"attachment; filename=\"{ascii_name}\"; filename*=UTF-8''{quote(name)}"
         return Response(content, media_type=media_type, headers={"Content-Disposition": disposition})
 
