@@ -537,9 +537,11 @@ Human steps outside the implementer's reach, all needed before the pilot opens:
 **Dependencies:** U5
 
 **Files:**
-- `xwiki/app/src/main/resources/Mesures/Code/MesureClass.xml`, `MesureSheet.xml`, `MesureTemplate.xml`, `ProvenanceClass.xml`, `NouvelleMesure.xml` (creation form)
+- `xwiki/app/src/main/resources/Mesures/Code/MesureClass.xml` (bound to the sheet), `MesureSheet.xml`, `ProvenanceClass.xml`, `MesureMacros.xml` (completeness, place and registry macros shared by the pages)
+- `xwiki/app/src/main/resources/Mesures/NouvelleMesure.xml` (creation form; no template page, the form creates the object)
 - `xwiki/app/src/main/resources/Mesures/WebHome.xml` (LiveData listing)
-- `tests/acceptance/test_measures.py`
+- `tools/wikidb/measures.py` (`is_complete`, `completeness`; `wikidb completeness` reports the direction-wide share)
+- `tests/acceptance/test_measures.py`, `tests/unit/test_measures.py`
 
 **Approach:**
 1. The creation form asks for a bureau (limited to the creator's bureaux) and a perimeter. It allocates the next `M-NNNN` identifier and creates the page in the matching space (KTD6, KTD8).

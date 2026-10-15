@@ -89,6 +89,10 @@ class XWikiClient:
         body = {"title": title, "content": content, "hidden": hidden}
         self._check(self.session.put(self.base + page.path(), json=body), 200, 201, 202, 304)
 
+    def delete_page(self, page: PageRef) -> None:
+        """Move a page to the recycle bin; a missing page is not an error."""
+        self._check(self.session.delete(self.base + page.path()), 200, 204, 404)
+
     def list_spaces(self) -> list[tuple[str, ...]]:
         """Every space of the wiki, as tuples of nested space names."""
         r = self._check(self.session.get(f"{self.base}/spaces"), 200)
@@ -100,10 +104,16 @@ class XWikiClient:
 
     def list_class_pages(self, class_name: str) -> list[str]:
         """References of every page holding an object of `class_name` (e.g. all user profiles)."""
-        r = self._check(self.session.get(f"{self.base}/classes/{class_name}/objects",
-                                         params={"number": "-1"}), 200)
-        refs = {f"{o['space']}.{o['pageName']}" for o in r.json().get("objectSummaries", [])}
-        return sorted(refs)
+        refs: set[str] = set()
+        start, size = 0, 1000                     # XWiki caps a REST page at 1000 results
+        while True:
+            r = self._check(self.session.get(f"{self.base}/classes/{class_name}/objects",
+                                             params={"start": start, "number": size}), 200)
+            summaries = r.json().get("objectSummaries", [])
+            refs |= {f"{o['space']}.{o['pageName']}" for o in summaries}
+            if len(summaries) < size:
+                return sorted(refs)
+            start += size
 
     # -- objects ---------------------------------------------------------------------------------------------------
 

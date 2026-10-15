@@ -1,0 +1,132 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Mesures.Code.MesureSheet" locale="">
+  <web>Mesures.Code</web>
+  <name>MesureSheet</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Mesures.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{include reference="Mesures.Code.MesureMacros"/}}
+
+{{velocity}}
+#set ($discard = $doc.use('Mesures.Code.MesureClass'))
+#set ($editing = $xcontext.action == 'edit')
+#mesurePlace ($doc $place)
+#mesureBureaux ($bureaux)
+#set ($mesureClass = $xwiki.getClass('Mesures.Code.MesureClass'))
+#set ($provenanceClass = $xwiki.getClass('Mesures.Code.ProvenanceClass'))
+#set ($provenanceFields = ['donnee', 'emetteur', 'ficheAnnuaire', 'frequence', 'format', 'contact'])
+#if (!$editing)
+  #mesureComplete ($doc $complete)
+  #if ($complete)
+{{success}}Fiche complète.{{/success}}
+  #else
+{{warning}}Fiche incomplète : renseigner tous les champs ci-dessous et au moins une provenance (donnée et émetteur).{{/warning}}
+  #end
+#end
+
+{{html wiki="true"}}
+&lt;div class="xform"&gt;
+&lt;dl&gt;
+  &lt;dt&gt;&lt;label&gt;Bureau propriétaire&lt;/label&gt;&lt;/dt&gt;
+  &lt;dd&gt;#if ($place.bureau)$escapetool.xml($place.bureau)#if ($bureaux.get($place.bureau)) – $escapetool.xml($bureaux.get($place.bureau).name)#end#end&lt;/dd&gt;
+  &lt;dt&gt;&lt;label&gt;Périmètre&lt;/label&gt;&lt;/dt&gt;
+  &lt;dd&gt;$!escapetool.xml($mesurePerimetres.get($place.perimetre))#if ($editing) &lt;span class="xHint"&gt;Pour changer de périmètre, déplacer la page (Renommer / Déplacer).&lt;/span&gt;#end&lt;/dd&gt;
+#foreach ($field in ['cleSource', 'dateCreation', 'vecteurJuridique', 'raisonEtre', 'modalitesModification',
+    'documentationInterne', 'documentationExterne'])
+  &lt;dt&gt;
+    &lt;label#if ($editing) for="Mesures.Code.MesureClass_0_$field"#end&gt;$escapetool.xml($doc.displayPrettyName($field, false, false))&lt;/label&gt;
+    #if ($editing)&lt;span class="xHint"&gt;$!escapetool.xml($mesureClass.get($field).getValue('hint'))&lt;/span&gt;#end
+  &lt;/dt&gt;
+  &lt;dd&gt;$doc.display($field)&lt;/dd&gt;
+#end
+#if (!$editing)
+  &lt;dt&gt;&lt;label&gt;Dernière modification&lt;/label&gt;&lt;/dt&gt;
+  &lt;dd&gt;$escapetool.xml($xwiki.formatDate($doc.date, 'dd/MM/yyyy HH:mm')) par $xwiki.getUserName($doc.author)&lt;/dd&gt;
+#end
+&lt;/dl&gt;
+&lt;/div&gt;
+
+&lt;h2 id="HProvenancedesdonnees"&gt;Provenance des données&lt;/h2&gt;
+#set ($provenances = $doc.getObjects('Mesures.Code.ProvenanceClass'))
+#if ($editing)
+  ## New provenance blocks are created on save (objectPolicy); removed ones are listed in deletedObjects.
+  &lt;input type="hidden" name="objectPolicy" value="updateOrCreate"/&gt;
+  #set ($next = 0)
+  #foreach ($provenance in $provenances)
+    #if ($provenance.number &gt;= $next)#set ($next = $provenance.number + 1)#end
+    &lt;fieldset class="xform mesure-provenance"&gt;
+    &lt;dl&gt;
+    #foreach ($field in $provenanceFields)
+      &lt;dt&gt;&lt;label for="Mesures.Code.ProvenanceClass_${provenance.number}_$field"&gt;$escapetool.xml($provenanceClass.get($field).prettyName)&lt;/label&gt;
+        &lt;span class="xHint"&gt;$!escapetool.xml($provenanceClass.get($field).getValue('hint'))&lt;/span&gt;&lt;/dt&gt;
+      &lt;dd&gt;$doc.display($field, 'edit', $provenance)&lt;/dd&gt;
+    #end
+    &lt;/dl&gt;
+    &lt;label&gt;&lt;input type="checkbox" name="deletedObjects" value="Mesures.Code.ProvenanceClass_${provenance.number}"/&gt; Supprimer ce bloc à l'enregistrement&lt;/label&gt;
+    &lt;/fieldset&gt;
+  #end
+  ## A disabled fieldset submits nothing, so an unused new block creates no empty object.
+  &lt;fieldset class="xform mesure-provenance" id="nouvelle-provenance" disabled="disabled" hidden="hidden"&gt;
+  &lt;dl&gt;
+  #foreach ($field in $provenanceFields)
+    #set ($inputName = "Mesures.Code.ProvenanceClass_${next}_$field")
+    &lt;dt&gt;&lt;label for="$inputName"&gt;$escapetool.xml($provenanceClass.get($field).prettyName)&lt;/label&gt;
+      &lt;span class="xHint"&gt;$!escapetool.xml($provenanceClass.get($field).getValue('hint'))&lt;/span&gt;&lt;/dt&gt;
+    &lt;dd&gt;
+    #if ($field == 'frequence')
+      &lt;select id="$inputName" name="$inputName"&gt;&lt;option value=""&gt;&lt;/option&gt;
+      #foreach ($value in $provenanceClass.get('frequence').getValue('values').split('\|'))
+        #set ($pair = $value.split('=', 2))
+        &lt;option value="$escapetool.xml($pair[0])"&gt;$escapetool.xml($pair[1])&lt;/option&gt;
+      #end
+      &lt;/select&gt;
+    #else
+      &lt;input type="text" id="$inputName" name="$inputName" size="60"/&gt;
+    #end
+    &lt;/dd&gt;
+  #end
+  &lt;/dl&gt;
+  &lt;/fieldset&gt;
+  &lt;p&gt;&lt;button type="button" class="btn btn-default" onclick="var b = document.getElementById('nouvelle-provenance'); b.disabled = false; b.hidden = false; this.hidden = true;"&gt;Ajouter une provenance&lt;/button&gt;&lt;/p&gt;
+#elseif ($provenances.isEmpty())
+  &lt;p&gt;Aucune provenance renseignée.&lt;/p&gt;
+#else
+  &lt;table class="table mesure-provenances"&gt;
+    &lt;thead&gt;&lt;tr&gt;
+    #foreach ($field in ['donnee', 'emetteur', 'frequence', 'format', 'contact'])
+      &lt;th scope="col"&gt;$escapetool.xml($provenanceClass.get($field).prettyName)&lt;/th&gt;
+    #end
+    &lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;
+    #foreach ($provenance in $provenances)
+      &lt;tr&gt;
+        &lt;td&gt;$escapetool.xml($provenance.getValue('donnee'))&lt;/td&gt;
+        #set ($emetteur = $escapetool.xml("$!provenance.getValue('emetteur')"))
+        #set ($fiche = $stringtool.trim("$!provenance.getValue('ficheAnnuaire')"))
+        #set ($ficheRef = $NULL)
+        #if ($fiche != '')
+          #set ($ficheRef = $services.model.resolveDocument($fiche))
+        #end
+        &lt;td&gt;#if ($ficheRef &amp;&amp; $xwiki.exists($ficheRef))&lt;a href="$xwiki.getURL($ficheRef)"&gt;$emetteur&lt;/a&gt;#else$emetteur#end&lt;/td&gt;
+        &lt;td&gt;$doc.display('frequence', 'view', $provenance)&lt;/td&gt;
+        &lt;td&gt;$escapetool.xml($provenance.getValue('format'))&lt;/td&gt;
+        &lt;td&gt;$escapetool.xml($provenance.getValue('contact'))&lt;/td&gt;
+      &lt;/tr&gt;
+    #end
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+#end
+{{/html}}
+{{/velocity}}</content>
+</xwikidoc>

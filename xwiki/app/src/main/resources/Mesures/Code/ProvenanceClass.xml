@@ -1,0 +1,125 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Mesures.Code.ProvenanceClass" locale="">
+  <web>Mesures.Code</web>
+  <name>ProvenanceClass</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Mesures.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Provenance d'une donnée</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <class>
+    <name>Mesures.Code.ProvenanceClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <donnee>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>La donnée reçue (ex. effectifs mensuels par programme).</hint>
+      <name>donnee</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Donnée</prettyName>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </donnee>
+    <emetteur>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Qui envoie la donnée (service, direction, organisme).</hint>
+      <name>emetteur</name>
+      <number>2</number>
+      <picker>0</picker>
+      <prettyName>Émetteur</prettyName>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </emetteur>
+    <ficheAnnuaire>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Référence de la fiche de l'émetteur, si elle existe (ex. Annuaire.Externes.Insee).</hint>
+      <name>ficheAnnuaire</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Fiche « Qui fait quoi »</prettyName>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </ficheAnnuaire>
+    <frequence>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <freeText>forbidden</freeText>
+      <hint></hint>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>frequence</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Fréquence</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>quotidienne=Quotidienne|hebdomadaire=Hebdomadaire|mensuelle=Mensuelle|trimestrielle=Trimestrielle|semestrielle=Semestrielle|annuelle=Annuelle|ponctuelle=Ponctuelle|autre=Autre</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </frequence>
+    <format>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Sous quelle forme elle arrive (ex. fichier Excel par messagerie, extraction Chorus).</hint>
+      <name>format</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>Forme</prettyName>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </format>
+    <contact>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Contact professionnel, de préférence une adresse fonctionnelle.</hint>
+      <name>contact</name>
+      <number>6</number>
+      <picker>0</picker>
+      <prettyName>Contact</prettyName>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </contact>
+  </class>
+</xwikidoc>

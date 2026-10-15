@@ -37,6 +37,11 @@ class FakeXWiki:
         self.writes += 1
         self.pages[str(page)] = {"title": title, "content": content, "hidden": hidden}
 
+    def delete_page(self, page: PageRef) -> None:
+        self.writes += 1
+        self.pages.pop(str(page), None)
+        self.objects.pop(str(page), None)
+
     def list_spaces(self):
         spaces = set()
         for ref in self.pages:

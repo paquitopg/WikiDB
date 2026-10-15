@@ -1,4 +1,4 @@
-"""`wikidb` command: provisioning, HR sync, import, backup and freshness checks.
+"""`wikidb` command: provisioning, HR sync, import, completeness, backup and freshness checks.
 
 Settings come from the environment, otherwise from /secrets/app/<NAME> (KTD11):
 WIKIDB_URL, WIKIDB_ROBOT_USER, WIKIDB_ROBOT_PASSWORD; for MinIO: AWS_S3_ENDPOINT, AWS_ACCESS_KEY_ID,
@@ -14,7 +14,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from . import backup, hrsync, importer, provision
+from . import backup, hrsync, importer, measures, provision
 from .client import PageRef, XWikiClient, setting
 
 SYNC_REPORT_PAGE = PageRef(("WikiDB",), "SynchronisationRH")
@@ -112,6 +112,15 @@ def cmd_import(args) -> int:
     return 0
 
 
+def cmd_completeness(args) -> int:
+    counts = measures.completeness(XWikiClient.from_settings())
+    for (bureau, perimeter), (complete, total) in sorted(counts.items()):
+        print(f"{bureau:<10} {perimeter:<9} {complete:>5} / {total:<5} complete")
+    complete, total = (sum(c[i] for c in counts.values()) for i in (0, 1))
+    print(f"all sheets: {complete} / {total} complete ({100 * complete / total:.0f} %)" if total else "no sheets")
+    return 0
+
+
 def cmd_backup(args) -> int:
     pg_env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"),
               "PGHOST": setting("POSTGRESQL_DB_HOST"), "PGPORT": setting("POSTGRESQL_DB_PORT", "5432"),
@@ -154,6 +163,7 @@ def main(argv=None) -> int:
     p = sub.add_parser("import", help="import a CSV/XLSX list of measures as skeleton sheets")
     p.add_argument("file")
     p.add_argument("--apply", action="store_true", help="write (default is a dry run)")
+    sub.add_parser("completeness", help="count complete measure sheets per bureau and perimeter")
     p = sub.add_parser("backup", help="dump PostgreSQL to the backup bucket and prune old dumps")
     p.add_argument("--prefix", default="dumps")
     p = sub.add_parser("check-fresh", help="exit 1 when a scheduled job has not succeeded recently")
@@ -161,8 +171,8 @@ def main(argv=None) -> int:
     p.add_argument("--prefix")
     p.add_argument("--max-age-hours", type=int, default=48)
     args = parser.parse_args(argv)
-    return {"bootstrap": cmd_bootstrap, "provision": cmd_provision, "hrsync": cmd_hrsync, "import": cmd_import, "backup": cmd_backup,
-            "check-fresh": cmd_check_fresh}[args.command](args)
+    return {"bootstrap": cmd_bootstrap, "provision": cmd_provision, "hrsync": cmd_hrsync, "import": cmd_import,
+            "completeness": cmd_completeness, "backup": cmd_backup, "check-fresh": cmd_check_fresh}[args.command](args)
 
 
 if __name__ == "__main__":

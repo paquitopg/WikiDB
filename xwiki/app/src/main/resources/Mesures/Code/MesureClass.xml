@@ -1,0 +1,170 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Mesures.Code.MesureClass" locale="">
+  <web>Mesures.Code</web>
+  <name>MesureClass</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Mesures.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Fiche mesure</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <class>
+    <name>Mesures.Code.MesureClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <cleSource>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Identifiant de la mesure dans la liste d'origine, utilisé par l'import. À laisser tel quel.</hint>
+      <name>cleSource</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Clé source</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </cleSource>
+    <dateCreation>
+      <customDisplay/>
+      <dateFormat>dd/MM/yyyy</dateFormat>
+      <disabled>0</disabled>
+      <emptyIsToday>0</emptyIsToday>
+      <hint>Date à laquelle la mesure a été créée (jj/mm/aaaa).</hint>
+      <name>dateCreation</name>
+      <number>2</number>
+      <picker>1</picker>
+      <prettyName>Date de création</prettyName>
+      <size>20</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+    </dateCreation>
+    <vecteurJuridique>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint>Texte qui a créé la mesure (ex. LFI 2024, article 12).</hint>
+      <name>vecteurJuridique</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Vecteur juridique</prettyName>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </vecteurJuridique>
+    <raisonEtre>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>Wysiwyg</editor>
+      <hint>Pourquoi la mesure a été créée et ce qu'elle vise.</hint>
+      <name>raisonEtre</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Raison d'être</prettyName>
+      <rows>6</rows>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </raisonEtre>
+    <modalitesModification>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>Wysiwyg</editor>
+      <hint>Comment la mesure peut être modifiée : vecteur, calendrier, acteurs.</hint>
+      <name>modalitesModification</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>Modalités de modification</prettyName>
+      <rows>6</rows>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </modalitesModification>
+    <documentationInterne>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>Wysiwyg</editor>
+      <hint>Notes, fichiers et liens internes à la direction.</hint>
+      <name>documentationInterne</name>
+      <number>6</number>
+      <picker>0</picker>
+      <prettyName>Documentation interne</prettyName>
+      <rows>6</rows>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </documentationInterne>
+    <documentationExterne>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>Wysiwyg</editor>
+      <hint>Textes, rapports et pages publiques.</hint>
+      <name>documentationExterne</name>
+      <number>7</number>
+      <picker>0</picker>
+      <prettyName>Documentation externe</prettyName>
+      <rows>6</rows>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </documentationExterne>
+  </class>
+  <object>
+    <name>Mesures.Code.MesureClass</name>
+    <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>3f0c2a5e-6a51-4d0e-9a57-0d6f3f1b7c11</guid>
+    <class>
+      <name>XWiki.ClassSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Sheet</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </sheet>
+    </class>
+    <property>
+      <sheet>Mesures.Code.MesureSheet</sheet>
+    </property>
+  </object>
+</xwikidoc>

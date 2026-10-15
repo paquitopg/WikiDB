@@ -1,0 +1,97 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Mesures.WebHome" locale="">
+  <web>Mesures</web>
+  <name>WebHome</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Main.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Fiches mesures</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{include reference="Mesures.Code.MesureMacros"/}}
+
+{{velocity}}
+#mesureBureaux ($bureaux)
+## Filters come from the location (KTD6): the space Mesures.&lt;code&gt;.&lt;Secteur|Synthese&gt; of each sheet.
+#set ($bureau = "$!request.bureau")
+#if (!$bureaux.containsKey($bureau))
+  #set ($bureau = '')
+#end
+#set ($perimetre = "$!request.perimetre")
+#if (!$mesurePerimetres.containsKey($perimetre))
+  #set ($perimetre = '')
+#end
+#if ($bureau != '')
+  #set ($spaceFilter = "Mesures.${bureau}.$!perimetre")
+#elseif ($perimetre != '')
+  #set ($spaceFilter = ".$perimetre")
+#else
+  #set ($spaceFilter = 'Mesures.')
+#end
+Une fiche par mesure : son historique, sa documentation et la provenance de ses données. La liste ne montre que les fiches que vous pouvez lire.
+
+[[Nouvelle fiche&gt;&gt;Mesures.NouvelleMesure||class="btn btn-primary"]]
+
+{{html}}
+&lt;form method="get" action="$doc.getURL('view')" class="form-inline"&gt;
+  &lt;label for="bureau"&gt;Bureau&lt;/label&gt;
+  &lt;select id="bureau" name="bureau"&gt;&lt;option value=""&gt;Tous&lt;/option&gt;
+  #foreach ($code in $bureaux.keySet())
+    &lt;option value="$escapetool.xml($code)"#if ($code == $bureau) selected="selected"#end&gt;$escapetool.xml($code) – $escapetool.xml($bureaux.get($code).name)&lt;/option&gt;
+  #end
+  &lt;/select&gt;
+  &lt;label for="perimetre"&gt;Périmètre&lt;/label&gt;
+  &lt;select id="perimetre" name="perimetre"&gt;&lt;option value=""&gt;Tous&lt;/option&gt;
+  #foreach ($key in $mesurePerimetres.keySet())
+    &lt;option value="$key"#if ($key == $perimetre) selected="selected"#end&gt;$escapetool.xml($mesurePerimetres.get($key))&lt;/option&gt;
+  #end
+  &lt;/select&gt;
+  &lt;button type="submit" class="btn btn-default"&gt;Filtrer&lt;/button&gt;
+&lt;/form&gt;
+{{/html}}
+
+{{liveData
+  id="mesures"
+  properties="doc.title,doc.space,vecteurJuridique,dateCreation,doc.date,doc.author"
+  source="liveTable"
+  sourceParameters="className=Mesures.Code.MesureClass"
+  filters="doc.space=$escapetool.url($spaceFilter)"
+  sort="doc.date:desc"
+  limit="25"
+}}
+{
+  "meta": {
+    "propertyDescriptors": [
+      {"id": "doc.title", "name": "Intitulé"},
+      {"id": "doc.space", "name": "Emplacement (Mesures.bureau.périmètre)"},
+      {"id": "doc.date", "name": "Dernière modification"},
+      {"id": "doc.author", "name": "Modifiée par"}
+    ]
+  }
+}
+{{/liveData}}
+
+## Completeness of the sheets this reader can see (success criterion; the direction-wide figure comes from
+## `wikidb completeness`).
+#set ($total = 0)
+#set ($completes = 0)
+#foreach ($fullName in $services.query.xwql("from doc.object(Mesures.Code.MesureClass) as m where doc.space like 'Mesures.%'").addFilter('viewable').execute())
+  #set ($total = $total + 1)
+  #mesureComplete ($xwiki.getDocument($fullName) $complete)
+  #if ($complete)
+    #set ($completes = $completes + 1)
+  #end
+#end
+#if ($total &gt; 0)
+$completes fiche(s) complète(s) sur $total visibles.
+#end
+{{/velocity}}</content>
+</xwikidoc>
