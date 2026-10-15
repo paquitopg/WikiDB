@@ -33,14 +33,25 @@ def _lines(blocks) -> list[tuple[list[Run], int, bool]]:
 
 
 def _split(line, budget: int):
-    """Split one over-long line into pieces under the budget, keeping run formatting per piece."""
+    """Split one over-long line into pieces under the budget. Whole runs are kept together where they fit; only a run
+    longer than the budget is wrapped, and every piece keeps its own run's bold, italics and link."""
     runs, level, bullet = line
-    text = "".join(r.text for r in runs)
-    if len(text) <= budget:
+    if len("".join(r.text for r in runs)) <= budget:
         return [line]
-    first = runs[0] if runs else Run("")
-    return [([Run(chunk, first.bold, first.italic, first.href)], level, bullet)
-            for chunk in textwrap.wrap(text, budget, break_long_words=True, break_on_hyphens=False)]
+    pieces, piece, used = [], [], 0
+    for run in runs:
+        chunks = [run] if len(run.text) <= budget else [
+            Run(chunk, run.bold, run.italic, run.href)
+            for chunk in textwrap.wrap(run.text, budget, break_long_words=True, break_on_hyphens=False)]
+        for chunk in chunks:
+            if piece and used + len(chunk.text) > budget:
+                pieces.append(piece)
+                piece, used = [], 0
+            piece.append(chunk)
+            used += len(chunk.text)
+    if piece:
+        pieces.append(piece)
+    return [(piece, level, bullet) for piece in pieces]
 
 
 def _pages(lines, budget: int = SLIDE_BUDGET):

@@ -148,3 +148,47 @@ def test_paths_outside_measure_sheets_are_refused_without_calling_the_wiki():
                  "/export/Bureaux/A/WebHome.docx"):
         assert client(200, export_data(), seen).get(path).status_code == 404
     assert seen == {}
+
+
+def test_wiki_errors_become_the_french_error_page_without_naming_the_sheet():
+    for status in (500, 503):
+        r = client(status).get("/export/Mesures/B/Secteur/M-0007.docx")
+        assert r.status_code == 502 and "M-0007" not in r.text and "introuvable" in r.text
+    assert client(401).get("/export/Mesures/A/Secteur/M-0042.docx").status_code == 401
+
+
+def test_unreachable_wiki_or_non_json_answer_becomes_a_502(monkeypatch):
+    import requests
+
+    from wikidb.export import server
+
+    def unreachable(*args, **kwargs):
+        raise requests.ConnectionError("wiki restarting")
+
+    class HtmlAnswer:
+        status_code = 200
+
+        def json(self):
+            raise ValueError("not JSON")
+
+    for fake in (unreachable, lambda *a, **k: HtmlAnswer()):
+        monkeypatch.setattr(server.requests, "get", fake)
+        app = TestClient(create_app(internal_url=INTERNAL), follow_redirects=False)
+        r = app.get("/export/Mesures/A/Secteur/M-0042.docx")
+        assert r.status_code == 502 and "introuvable" in r.text
+
+
+def test_long_paragraph_keeps_each_run_formatting_across_slides():
+    from wikidb.export.html import Run
+    from wikidb.export.pptx_writer import _pages
+
+    lead = Run("Important : ", bold=True)
+    body = Run(" ".join(f"mot{i:04d}" for i in range(400)))                 # about 3,200 characters
+    link = Run("le rapport", href=f"{ORIGIN}/bin/view/Rapport")
+    pages = _pages([([lead, body, link], 0, False)])
+    runs = [run for page in pages for runs, _, _ in page for run in runs]
+    assert len(pages) > 1
+    assert "".join(r.text for r in runs).replace(" ", "") == (lead.text + body.text + link.text).replace(" ", "")
+    assert all(r.bold for r in runs if "Important" in r.text)
+    assert not any(r.bold for r in runs if "mot" in r.text)
+    assert [r.text for r in runs if r.href] == ["le rapport"]

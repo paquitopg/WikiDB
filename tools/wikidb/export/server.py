@@ -36,10 +36,14 @@ Fetch = Callable[[str, str, dict], tuple[int, dict | None]]
 
 
 def fetch_export_data(internal_url: str, reference: str, headers: dict) -> tuple[int, dict | None]:
-    r = requests.get(f"{internal_url.rstrip('/')}/bin/get/Mesures/Code/ExportData",
-                     params={"xpage": "plain", "outputSyntax": "plain", "mesure": reference},
-                     headers=headers, allow_redirects=False, timeout=60)
-    return r.status_code, (r.json() if r.status_code == 200 else None)
+    """XWiki's status and JSON; an unreachable wiki or a 200 that is not JSON (a rendering error) counts as 502."""
+    try:
+        r = requests.get(f"{internal_url.rstrip('/')}/bin/get/Mesures/Code/ExportData",
+                         params={"xpage": "plain", "outputSyntax": "plain", "mesure": reference},
+                         headers=headers, allow_redirects=False, timeout=(5, 60))
+        return r.status_code, (r.json() if r.status_code == 200 else None)
+    except (requests.RequestException, ValueError):
+        return 502, None
 
 
 def _page(status: int, message: str, link: tuple[str, str] | None = None) -> HTMLResponse:
