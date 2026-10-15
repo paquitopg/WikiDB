@@ -280,3 +280,16 @@ html body .fr-footer a:focus {
   color: inherit;
   text-decoration: none;
 }
+
+/* ---- Small screens: header dropdowns span the screen instead of running off its left edge ---- */
+
+@media (max-width: 767px) {
+  html body #xwikimainmenu.wikidb-xwikitools .dropdown-menu {
+    left: 1rem;
+    max-width: none;
+    position: fixed;
+    right: 1rem;
+    top: auto;
+    width: auto;
+  }
+}
