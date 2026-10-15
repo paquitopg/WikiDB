@@ -7,6 +7,10 @@ postgresql:
 oidc:
   # ProConnect integration (Internet); register the SSPCloud redirect URI with this client.
   discoveryUrl: https://fca.integ01.dev-agentconnect.fr/api/v2/.well-known/openid-configuration
+export:
+  image:
+    tag: "dev"
+    pullPolicy: Always
 ingress:
   hostname: wikidb-pgoze.user.lab.sspcloud.fr
 persistence:

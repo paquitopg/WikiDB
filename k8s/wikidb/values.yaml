@@ -29,6 +29,18 @@ ingress:
   className: onyxia
   hostname: ""
 
+# Word and PowerPoint export service (KTD17), routed under /export on the wiki's hostname.
+export:
+  enabled: true
+  image:
+    repository: ghcr.io/paquitopg/wikidb-export
+    tag: ""
+    digest: ""
+    pullPolicy: IfNotPresent
+  resources:
+    requests: {cpu: 100m, memory: 256Mi}
+    limits: {memory: 512Mi}
+
 persistence:
   size: 10Gi
   storageClassName: ""

@@ -18,3 +18,19 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .userAgent }} -Dhttp.agent={{ .userAgent | quote }}{{ end }}
 {{- end }}
 {{- end -}}
+
+{{/* The export workload has its own labels: the wiki Service selects wikidb.labels and must never reach it. */}}
+{{- define "wikidb.exportLabels" -}}
+app.kubernetes.io/name: wikidb-export
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{- define "wikidb.exportImage" -}}
+{{- with .Values.export.image -}}
+{{- if .digest -}}
+{{ .repository }}@{{ .digest }}
+{{- else -}}
+{{ .repository }}:{{ required "export.image.tag or export.image.digest is required" .tag }}
+{{- end -}}
+{{- end -}}
+{{- end -}}

@@ -1,0 +1,5 @@
+# Root build context (export/Dockerfile) only needs pyproject.toml and tools/.
+*
+!pyproject.toml
+!tools/
+tools/**/__pycache__
