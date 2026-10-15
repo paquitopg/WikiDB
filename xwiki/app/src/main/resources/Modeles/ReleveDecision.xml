@@ -1,0 +1,44 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Modeles.ReleveDecision" locale="">
+  <web>Modeles</web>
+  <name>ReleveDecision</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Modeles.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Relevé de décision</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>(% class="box infomessage" %)
+(((
+Modèle de relevé de décision : remplacer les indications en italique, puis supprimer cet encadré.
+)))
+
+|=Décision|//énoncé de la décision//
+|=Date|//jj/mm/aaaa//
+|=Décideur|//autorité qui a tranché//
+|=Bureaux concernés|//codes des bureaux//
+
+== Contexte ==
+
+//Question posée et options examinées.//
+
+== Décision ==
+
+//Ce qui a été décidé, avec ses éventuelles conditions.//
+
+== Conséquences ==
+
+//Ce qui change, pour qui, à partir de quand.//
+
+== Fiches mesures liées ==
+
+* //Lien vers chaque fiche concernée.//</content>
+</xwikidoc>

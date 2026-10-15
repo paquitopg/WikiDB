@@ -1,0 +1,44 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Modeles.NoteBreve" locale="">
+  <web>Modeles</web>
+  <name>NoteBreve</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Modeles.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Note brève</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>(% class="box infomessage" %)
+(((
+Modèle de note brève : remplacer les indications en italique, puis supprimer cet encadré.
+)))
+
+|=Objet|//sujet de la note//
+|=Destinataire|//autorité ou bureau//
+|=Rédacteur|//nom et bureau//
+|=Date|//jj/mm/aaaa//
+
+== Messages clés ==
+
+* //Ce que le destinataire doit retenir, en trois points au plus.//
+
+== Contexte ==
+
+//Ce qui motive la note : demande, calendrier, enjeux.//
+
+== Analyse ==
+
+//Éléments chiffrés et arguments. Citer les fiches mesures concernées.//
+
+== Proposition ==
+
+//Décision ou suite proposée.//</content>
+</xwikidoc>

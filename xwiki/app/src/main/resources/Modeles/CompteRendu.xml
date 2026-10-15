@@ -1,0 +1,53 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Modeles.CompteRendu" locale="">
+  <web>Modeles</web>
+  <name>CompteRendu</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Modeles.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Compte rendu de réunion</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>(% class="box infomessage" %)
+(((
+Modèle de compte rendu : remplacer les indications en italique, puis supprimer cet encadré.
+)))
+
+== Réunion ==
+
+|=Date|//jj/mm/aaaa//
+|=Lieu ou format|//salle, visioconférence//
+|=Participants|//noms et bureaux//
+|=Excusés|//noms//
+|=Rédacteur|//nom//
+
+== Ordre du jour ==
+
+1. //Point 1//
+1. //Point 2//
+
+== Échanges ==
+
+//Résumé des échanges, point par point.//
+
+== Décisions ==
+
+* //Décision prise, avec son périmètre.//
+
+== Actions ==
+
+|=Action|=Responsable|=Échéance
+|//Action à mener//|//nom//|//jj/mm/aaaa//
+
+== Prochaine réunion ==
+
+//Date et objet.//</content>
+</xwikidoc>

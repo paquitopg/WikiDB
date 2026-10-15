@@ -103,6 +103,7 @@ def target_state(bureaux: list[Bureau]) -> TargetState:
         Space(("Annuaire", "Externes"), "Émetteurs externes", admins_only_edit),
         Space(("Glossaire",), "Glossaire budgétaire", (Rule((direction,), ("edit", "delete")),)),
         Space(("Glossaire", "Code"), "Glossaire - code", admins_only_edit),
+        Space(("Modeles",), "Modèles de pages", admins_only_edit),
         Space(("WikiDB",), "Administration du wiki", (Rule((ADMINS,), ("view", "edit", "delete")),)),
         # Group pages and every other XWiki-space page: administrators only; user profiles keep their page rights.
         Space(("XWiki",), "XWiki", admins_only_edit),

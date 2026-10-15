@@ -76,7 +76,7 @@ def test_application_code_and_group_pages_are_editable_by_admins_only():
     wiki = wiki_with_flavor()
     apply(wiki, target_state([A]))
     admins = {Rule(("XWiki.XWikiAdminGroup",), ("delete", "edit"))}
-    for space in ("Mesures", "Procedures", "Annuaire", "Glossaire.Code", "XWiki", "Mesures.A"):
+    for space in ("Mesures", "Procedures", "Annuaire", "Glossaire.Code", "XWiki", "Mesures.A", "Modeles"):
         assert rules(wiki, space) == admins, space
 
 
