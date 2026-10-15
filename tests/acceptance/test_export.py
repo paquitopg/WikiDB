@@ -1,7 +1,8 @@
 """Word and PowerPoint export against the dev wiki (U13; R7, R22, R27, AE10).
 
-The export service runs in-process on a free local port and reaches the dev wiki at --base-url, exactly as the
-deployed service reaches XWiki: it forwards the agent's credentials and holds none of its own.
+The export service runs in-process on a free local port and reaches the dev wiki at --base-url, as the deployed
+service reaches XWiki: it forwards the agent's credentials and holds none of its own. With --export-url the same tests
+run against the deployed service through the ingress.
 """
 
 import io
@@ -23,7 +24,11 @@ from wikidb.measures import FIELDS, MESURE_CLASS, PROVENANCE_CLASS
 
 
 @pytest.fixture(scope="module")
-def service(base_url):
+def service(base_url, request):
+    deployed = request.config.getoption("--export-url")
+    if deployed:                                   # through the ingress, as agents reach it (U14)
+        yield deployed.rstrip("/")
+        return
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
         port = s.getsockname()[1]

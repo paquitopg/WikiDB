@@ -37,6 +37,8 @@ USERS = {  # name -> groups
 
 def pytest_addoption(parser):
     parser.addoption("--base-url", default=None, help="dev wiki URL for acceptance tests")
+    parser.addoption("--export-url", default=None,
+                     help="deployed export service (e.g. the wiki URL); default: run it in-process")
 
 
 def pytest_collection_modifyitems(config, items):
