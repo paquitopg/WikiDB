@@ -36,6 +36,7 @@
   </properties>
   <modules>
     <module>dsfr</module>
+    <module>oidc-authenticator</module>
     <module>app</module>
     <module>mainwiki</module>
     <module>xip</module>

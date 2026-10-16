@@ -21,9 +21,10 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.contrib.oidc</groupId>
-      <artifactId>oidc-authenticator</artifactId>
-      <version>${oidc.version}</version>
+      <!-- Upstream authenticator with the nonce ProConnect requires (KTD9). -->
+      <groupId>${project.groupId}</groupId>
+      <artifactId>wikidb-oidc-authenticator</artifactId>
+      <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
