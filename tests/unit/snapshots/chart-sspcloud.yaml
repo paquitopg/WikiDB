@@ -1,0 +1,198 @@
+---
+# Source: wikidb/templates/pvc.yaml
+# Permanent directory: installed-extension state, search index, logs (KTD5). Content lives in PostgreSQL (KTD4).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wikidb-data
+  labels:
+    app.kubernetes.io/name: wikidb
+    app.kubernetes.io/instance: wikidb
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# Source: wikidb/templates/export-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wikidb-export
+  labels:
+    app.kubernetes.io/name: wikidb-export
+    app.kubernetes.io/instance: wikidb
+spec:
+  selector:
+    app.kubernetes.io/name: wikidb-export
+    app.kubernetes.io/instance: wikidb
+  ports:
+    - {name: http, port: 8000, targetPort: http}
+
+---
+# Source: wikidb/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wikidb
+  labels:
+    app.kubernetes.io/name: wikidb
+    app.kubernetes.io/instance: wikidb
+spec:
+  selector:
+    app.kubernetes.io/name: wikidb
+    app.kubernetes.io/instance: wikidb
+  ports:
+    - {name: http, port: 8080, targetPort: http}
+
+---
+# Source: wikidb/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wikidb
+  labels:
+    app.kubernetes.io/name: wikidb
+    app.kubernetes.io/instance: wikidb
+spec:
+  replicas: 1
+  # XWiki is not clustered here and the volume is ReadWriteOnce: never run two pods at once.
+  strategy: {type: Recreate}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wikidb
+      app.kubernetes.io/instance: wikidb
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wikidb
+        app.kubernetes.io/instance: wikidb
+    spec:
+      securityContext:
+        fsGroup: 0
+      containers:
+        - name: xwiki
+          image: ghcr.io/paquitopg/wikidb@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          imagePullPolicy: Always
+          ports:
+            - {name: http, containerPort: 8080}
+          env:
+            - {name: DB_HOST, value: "postgresql-cnpg-955635-rw"}
+            - {name: DB_PORT, value: "5432"}
+            - name: DB_DATABASE
+              valueFrom: {secretKeyRef: {name: postgresql-cnpg-955635-app, key: dbname}}
+            - name: DB_USER
+              valueFrom: {secretKeyRef: {name: postgresql-cnpg-955635-app, key: username}}
+            - name: DB_PASSWORD
+              valueFrom: {secretKeyRef: {name: postgresql-cnpg-955635-app, key: password}}
+            - {name: OIDC_DISCOVERY_URL, value: "https://fca.integ01.dev-agentconnect.fr/api/v2/.well-known/openid-configuration"}
+            - {name: JAVA_OPTS, value: "-Xmx2g"}
+          volumeMounts:
+            - {name: data, mountPath: /usr/local/xwiki}
+            - {name: app-secrets, mountPath: /secrets/app, readOnly: true}
+          resources:
+            limits:
+              memory: 3Gi
+            requests:
+              cpu: "1"
+              memory: 3Gi
+          # XWiki answers 202 while it initializes, and the first start installs the default UI.
+          startupProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: {path: /rest/, port: http}
+            periodSeconds: 15
+            timeoutSeconds: 10
+          livenessProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 30
+            failureThreshold: 5
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: wikidb-data}
+        - name: app-secrets
+          secret:
+            secretName: wikidb-app
+            defaultMode: 0400
+            optional: true
+
+---
+# Source: wikidb/templates/export-deployment.yaml
+# Word and PowerPoint export (KTD17): a separate workload, so its failures and updates never touch the wiki pod.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wikidb-export
+  labels:
+    app.kubernetes.io/name: wikidb-export
+    app.kubernetes.io/instance: wikidb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wikidb-export
+      app.kubernetes.io/instance: wikidb
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wikidb-export
+        app.kubernetes.io/instance: wikidb
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: export
+          image: ghcr.io/paquitopg/wikidb-export@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          imagePullPolicy: Always
+          ports:
+            - {name: http, containerPort: 8000}
+          env:
+            # The service holds no credentials: it forwards each reader's own session to the wiki Service.
+            - {name: WIKIDB_INTERNAL_URL, value: "http://wikidb:8080"}
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          readinessProbe:
+            httpGet: {path: /export/healthz, port: http}
+            periodSeconds: 15
+          livenessProbe:
+            httpGet: {path: /export/healthz, port: http}
+            periodSeconds: 30
+
+---
+# Source: wikidb/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wikidb
+  labels:
+    app.kubernetes.io/name: wikidb
+    app.kubernetes.io/instance: wikidb
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+spec:
+  ingressClassName: onyxia
+  tls:
+    - hosts: [wikidb-pgoze.user.lab.sspcloud.fr]
+  rules:
+    - host: wikidb-pgoze.user.lab.sspcloud.fr
+      http:
+        paths:
+          # Same host as the wiki, so the browser sends the XWiki session cookie to the export service (KTD17).
+          - path: /export
+            pathType: Prefix
+            backend:
+              service: {name: wikidb-export, port: {name: http}}
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: wikidb, port: {name: http}}

@@ -6,6 +6,13 @@ image:
   digest: ""
   pullPolicy: IfNotPresent
 
+# Private registry credentials (Nubonyxia: Harbor robot, passed by the Deploy job). An empty registry renders no
+# pull Secret.
+imageCredentials:
+  registry: ""
+  username: ""
+  token: ""
+
 # 0 stops the wiki without deleting anything, e.g. to fill an empty volume before a restore (restore.md).
 # Never more than 1: XWiki is not clustered here and the volume is ReadWriteOnce.
 replicas: 1
@@ -14,11 +21,23 @@ replicas: 1
 postgresql:
   host: ""            # e.g. postgresql-cnpg-123456-rw
   port: "5432"
-  secretName: ""      # e.g. postgresql-cnpg-123456-app (keys: dbname, username, password)
+  secretName: ""      # e.g. postgresql-cnpg-123456-app
+  # Key names in that Secret. Nubonyxia's discoverable PostgreSQL uses postgres-database, postgres-username and
+  # password (the user's, not postgres-password). Its port key is not base64-encoded: keep port a plain value.
+  keys:
+    database: dbname
+    username: username
+    password: password
 
 # Secret created by hand (never in Git) with keys OIDC_CLIENT_ID, OIDC_SECRET and, for the one-off bootstrap only,
 # SUPERADMIN_PASSWORD. Mounted as files under /secrets/app (KTD11).
 appSecret: wikidb-app
+
+# Secrets rendered by the chart instead of appSecret, mounted at the same place. The Nubonyxia Deploy job fills them
+# from the runner's /secrets/app: [{name: OIDC_SECRET, valueBase64: ...}].
+appSecrets:
+  enabled: false
+  secrets: []
 
 oidc:
   discoveryUrl: ""    # ProConnect .well-known/openid-configuration of the platform's client

@@ -19,6 +19,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 {{- end -}}
 
+{{- define "wikidb.imagePullSecrets" -}}
+{{- if .Values.imageCredentials.registry -}}
+imagePullSecrets:
+  - name: {{ .Release.Name }}-pull
+{{- end }}
+{{- end -}}
+
 {{/* The export workload has its own labels: the wiki Service selects wikidb.labels and must never reach it. */}}
 {{- define "wikidb.exportLabels" -}}
 app.kubernetes.io/name: wikidb-export
