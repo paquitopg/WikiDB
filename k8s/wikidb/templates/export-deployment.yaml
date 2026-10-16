@@ -13,6 +13,7 @@ spec:
     metadata:
       labels: {{- include "wikidb.exportLabels" . | nindent 8 }}
     spec:
+      {{- with include "wikidb.imagePullSecrets" . }}{{ . | nindent 6 }}{{ end }}
       securityContext:
         runAsNonRoot: true
       containers:

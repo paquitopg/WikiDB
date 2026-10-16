@@ -13,6 +13,7 @@ spec:
     metadata:
       labels: {{- include "wikidb.labels" . | nindent 8 }}
     spec:
+      {{- with include "wikidb.imagePullSecrets" . }}{{ . | nindent 6 }}{{ end }}
       securityContext:
         fsGroup: 0
       containers:
@@ -25,11 +26,11 @@ spec:
             - {name: DB_HOST, value: {{ required "postgresql.host is required" .Values.postgresql.host | quote }}}
             - {name: DB_PORT, value: {{ .Values.postgresql.port | quote }}}
             - name: DB_DATABASE
-              valueFrom: {secretKeyRef: {name: {{ required "postgresql.secretName is required" .Values.postgresql.secretName }}, key: dbname}}
+              valueFrom: {secretKeyRef: {name: {{ required "postgresql.secretName is required" .Values.postgresql.secretName }}, key: {{ .Values.postgresql.keys.database }}}}
             - name: DB_USER
-              valueFrom: {secretKeyRef: {name: {{ .Values.postgresql.secretName }}, key: username}}
+              valueFrom: {secretKeyRef: {name: {{ .Values.postgresql.secretName }}, key: {{ .Values.postgresql.keys.username }}}}
             - name: DB_PASSWORD
-              valueFrom: {secretKeyRef: {name: {{ .Values.postgresql.secretName }}, key: password}}
+              valueFrom: {secretKeyRef: {name: {{ .Values.postgresql.secretName }}, key: {{ .Values.postgresql.keys.password }}}}
             - {name: OIDC_DISCOVERY_URL, value: {{ .Values.oidc.discoveryUrl | quote }}}
             - {name: JAVA_OPTS, value: {{ include "wikidb.javaOpts" . | quote }}}
           volumeMounts:
@@ -54,6 +55,6 @@ spec:
           persistentVolumeClaim: {claimName: {{ .Release.Name }}-data}
         - name: app-secrets
           secret:
-            secretName: {{ .Values.appSecret }}
+            secretName: {{ if .Values.appSecrets.enabled }}{{ .Release.Name }}-app-secrets{{ else }}{{ .Values.appSecret }}{{ end }}
             defaultMode: 0400
             optional: true
