@@ -38,6 +38,12 @@
               <action>INSERT_ATTACHMENT_CONTENT</action>
               <content>${project.basedir}/src/main/skin/menus_view.vm</content>
             </transformation>
+            <transformation>
+              <file>WikiDB/Code/Skin.xml</file>
+              <xpath>/xwikidoc/object[className='XWiki.UIExtensionClass']/property/content</xpath>
+              <action>INSERT_TEXT</action>
+              <content>${project.basedir}/src/main/skin/html_head.xwiki</content>
+            </transformation>
           </transformations>
         </configuration>
       </plugin>

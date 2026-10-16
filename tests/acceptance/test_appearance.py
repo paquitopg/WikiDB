@@ -92,3 +92,15 @@ def test_footer_pages_are_french_readable_by_agents_and_edited_by_admins_only(wo
         r = a.get(page)
         assert r.status_code == 200 and r.json()["title"] == title, name
         assert a.put(page, title, "Modification par un agent").status_code in (401, 403), name
+
+
+def test_head_carries_the_dsfr_favicons_and_theme_colour_for_guests_too(base_url):
+    login = requests.get(f"{base_url.rstrip('/')}/bin/login/XWiki/XWikiLogin", params={"oidc.skipped": "true"})
+    head = login.text[:login.text.index("</head>")]
+    assert '<meta name="theme-color" content="#000091"' in head
+    assert '<meta name="format-detection"' in head
+    icon = re.search(r'<link rel="icon" href="([^"]+/wikidb-dsfr/[^"]+/dist/favicon/favicon\.svg[^"]*)"', head)
+    manifest = re.search(r'<link rel="manifest" href="([^"]+)"', head)
+    assert icon and manifest
+    for href in (icon.group(1), manifest.group(1)):
+        assert requests.get(urljoin(base_url, href)).status_code == 200, href
