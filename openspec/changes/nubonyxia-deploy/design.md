@@ -75,11 +75,11 @@ The Java version is that of the current image (Temurin 21.0.12.1). Java appends 
 
 *This amends KTD16 ("RIE files only in the private Forge project"):* the private GitHub repository is the source, so the layer can be edited from SSPCloud and is backed up. The chart is copied rather than referenced, because the runner cannot reach GitHub.
 
-**D4. `release.sh <wikidb commit>` is the only release step that touches images and the chart.** Run from a Nubonyxia VSCode, it does four things (the fixed `Dockerfile` of D1 is not touched):
-1. resolves the two digests on GHCR for `sha-<commit>`;
-2. runs `crane copy` for both and checks that each digest is unchanged in Harbor;
-3. replaces `helm/` with `git archive <commit> k8s/wikidb` from a WikiDB clone, sets `name: wikidb-chart`, and merges `values-rie.yaml` into `helm/values.yaml` with a real YAML merge;
-4. records the WikiDB commit and both digests in the commit message, and commits.
+**D4. `release.sh <wikidb commit> <wiki digest> <export digest>` is the only release step that touches images and the chart.** The commit only supplies the chart. The digests are those running on SSPCloud (`helm get values wikidb`), that is the images tested there: GitHub Actions builds each image only when its own sources change, so a single WikiDB commit rarely has both images, and a chart-only commit has none. Run from a Nubonyxia VSCode, it does four things (the fixed `Dockerfile` of D1 is not touched):
+1. checks that both digests exist on GHCR;
+2. runs `crane copy` for both, tagged with the digest's first 12 hex characters so Harbor keeps them, and checks that each digest is unchanged in Harbor;
+3. replaces `helm/` with `git archive <commit> k8s/wikidb` from a WikiDB clone, sets `name: wikidb-chart`, and merges `values-rie.yaml` and both digests into `helm/values.yaml` with a real YAML merge;
+4. records the WikiDB commit and both digests in the commit message, and commits. `DRY_RUN=1` stops after step 3 and skips the registries, for a check outside the RIE.
 
 The merge is done here, not through `HELM_VALUES_OVERRIDE`, because the template appends that variable as text, and duplicate top-level keys are not a safe override.
 

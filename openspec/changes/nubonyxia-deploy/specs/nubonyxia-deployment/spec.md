@@ -7,11 +7,11 @@ Defines how the wiki is delivered to and runs on Nubonyxia: the same tested imag
 ## ADDED Requirements
 
 ### Requirement: Nubonyxia runs the image digests tested on SSPCloud
-The wiki and export workloads on Nubonyxia SHALL run images whose digests equal those built on GHCR for the delivered WikiDB commit. No image is rebuilt on the RIE.
+The wiki and export workloads on Nubonyxia SHALL run images whose digests equal those running on SSPCloud when the release is made. No image is rebuilt on the RIE.
 
 #### Scenario: Digests match after a release
-- **WHEN** a release for WikiDB commit `<c>` is deployed on Nubonyxia
-- **THEN** the running wiki and export containers report the same image digests as `ghcr.io/paquitopg/wikidb:sha-<c>` and `ghcr.io/paquitopg/wikidb-export:sha-<c>`
+- **WHEN** a release made with the wiki and export digests deployed on SSPCloud is deployed on Nubonyxia
+- **THEN** the running wiki and export containers report those same image digests
 
 #### Scenario: Forced tag is ignored
 - **WHEN** the platform's Deploy job passes `--set image.tag=<short SHA>`

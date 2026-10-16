@@ -15,7 +15,7 @@ The wiki is developed and tested on SSPCloud, but it must run on Nubonyxia becau
   1. A pull Secret built from `imageCredentials`.
   2. The app Secret built from `appSecrets`, which the template fills from the runner's `/secrets/app`, mounted at `/secrets/app`. The existing `appSecret` stays as the fallback.
   3. Configurable PostgreSQL Secret key names, for the "discoverable" PostgreSQL Secret.
-- **A new private repository `paquitopg/wikidb-rie`, mirrored to the Forge.** It holds everything specific to the RIE and is delivered with `git forge-push`. It contains `.gitlab-ci.yml`, a placeholder `Dockerfile`, the RIE values, the chart copied from WikiDB, and `release.sh`, which copies the images and the chart for a given WikiDB commit. **This amends KTD16**: the RIE layer is versioned on GitHub (private) as well as the Forge, rather than on the Forge only.
+- **A new private repository `paquitopg/wikidb-rie`, mirrored to the Forge.** It holds everything specific to the RIE and is delivered with `git forge-push`. It contains `.gitlab-ci.yml`, a placeholder `Dockerfile`, the RIE values, the chart copied from WikiDB, and `release.sh`, which copies the images tested on SSPCloud and the chart of a given WikiDB commit. **This amends KTD16**: the RIE layer is versioned on GitHub (private) as well as the Forge, rather than on the Forge only.
 - **ProConnect Integration (Internet) on Nubonyxia to begin with**, through the lab proxy with `oidc.userAgent=curl/8.5.0`. Production ProConnect comes later, with its own client.
 - **Platform agreements** requested from nubonyxia@finances.gouv.fr:
   - written agreement to host the wiki;
