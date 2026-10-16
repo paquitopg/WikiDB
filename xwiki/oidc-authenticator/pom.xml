@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>fr.finances.budget.wikidb</groupId>
+    <artifactId>wikidb-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>wikidb-oidc-authenticator</artifactId>
+  <packaging>jar</packaging>
+  <name>WikiDB - OpenID Connect Authenticator for ProConnect</name>
+  <description>The xwiki-contrib OpenID Connect Authenticator with a nonce in the code flow, which ProConnect requires</description>
+  <!-- KTD9 of docs/plans/2026-10-14-1629-feat-direction-budget-wiki-plan.md. The upstream jar is unpacked as is, except
+       the two classes in src/main/java, which are upstream's sources with "WikiDB patch" edits. Drop this module once
+       xwiki-contrib/oidc sends a nonce in the code flow. -->
+  <properties>
+    <!-- Replaces the upstream extension: the Extension Manager uninstalls it instead of loading both. -->
+    <xwiki.extension.features>org.xwiki.contrib.oidc:oidc-authenticator/${oidc.version}</xwiki.extension.features>
+    <!-- Upstream code, kept as close to upstream as possible. -->
+    <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+    <xwiki.revapi.skip>true</xwiki.revapi.skip>
+    <xwiki.jacoco.skip>true</xwiki.jacoco.skip>
+  </properties>
+  <dependencies>
+    <!-- The WAR's platform, which also replaces the 14.10 platform upstream was built against. -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${platform.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Compile against the upstream jar, which is also unpacked below; never shipped as a dependency. -->
+    <dependency>
+      <groupId>org.xwiki.contrib.oidc</groupId>
+      <artifactId>oidc-authenticator</artifactId>
+      <version>${oidc.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Upstream's runtime dependencies; platform modules are core extensions of the WAR. -->
+    <dependency>
+      <groupId>org.xwiki.contrib.oidc</groupId>
+      <artifactId>oidc-provider</artifactId>
+      <version>${oidc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib.oidc</groupId>
+      <artifactId>oidc-authenticator-configuration</artifactId>
+      <version>${oidc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib.oidc</groupId>
+      <artifactId>oidc-authenticator-user</artifactId>
+      <version>${oidc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib.oidc</groupId>
+      <artifactId>oauth2-store</artifactId>
+      <version>${oidc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib.user-common</groupId>
+      <artifactId>user-common-formatter</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- Like mainwiki: upstream is built against an older platform, which the Extension Manager resolves against
+             the core extensions at install time. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-upper-bounds</id>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-upstream</id>
+            <phase>process-resources</phase>
+            <goals><goal>unpack</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.xwiki.contrib.oidc</groupId>
+                  <artifactId>oidc-authenticator</artifactId>
+                  <version>${oidc.version}</version>
+                  <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                  <excludes>META-INF/maven/**,org/xwiki/contrib/oidc/auth/OIDCAuthServiceImpl.class,org/xwiki/contrib/oidc/auth/internal/endpoint/CallbackOIDCEndpoint.class</excludes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
