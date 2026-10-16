@@ -127,7 +127,7 @@ flowchart TB
 - XWiki installs a webjars.org artifact bundled in the XIP as a webjar extension and serves it under `/webjars/`, as it does for the webjars Flamingo itself uses. U1 checks this first.
 - `XWiki.XWikiPreferences` from the flavor leaves its `skin` property empty, so `xwiki.defaultskin` decides. U2 checks this, and if it is not empty the skin is set through the preferences page instead.
 - The skin's templates and its always-loaded bridge stylesheet run with the rights of the skin document's last author. After the XAR install, that author holds script rights, which only administrators have (KTD12 of the wiki plan). U2 checks this on dev.
-- Using the DSFR on the SSPCloud dev wiki, outside `.gouv.fr`, is acceptable because that wiki is access-restricted, not public, and holds fictitious data. Production runs under `rie.gouv.fr`. The product authority confirms this together with Q2.
+- Using the DSFR on the SSPCloud dev wiki, outside `.gouv.fr`, is acceptable because that wiki is access-restricted, not public, and holds fictitious data. Production runs on the RIE. The product authority confirms this together with Q2.
 
 ### Risks & Dependencies
 
@@ -135,7 +135,7 @@ flowchart TB
 |---|---|
 | The DSFR core resets global element styles and clashes with Bootstrap 3 in Flamingo (buttons, dropdowns, modals). | KTD4 loads only the needed components; U3's acceptance checks and the visual checklist cover the editor, a dropdown and a modal. |
 | An XWiki upgrade changes `menus_view.vm` or `footer.vm`, and the overrides drift from Flamingo. | KTD3 limits overrides to two templates; U5 records the diff-against-Flamingo step in the upgrade runbook; U2's acceptance tests fail if search or the user menu disappear. |
-| The DSFR terms reserve it to `.gouv.fr` State sites and require SIG approval for new sites. | Production is under `rie.gouv.fr`; Q2 goes to the product authority before the pilot opens. |
+| The DSFR terms reserve it to `.gouv.fr` State sites and require SIG approval for new sites. | Production is on the RIE; Q2 goes to the product authority before the pilot opens. |
 | webjars.org cannot deploy 1.15.3. | KTD2's fallback module repackages the npm tarball. |
 
 ### System-Wide Impact
