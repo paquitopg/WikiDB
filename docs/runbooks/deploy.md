@@ -14,9 +14,8 @@ digest**, never by a moving tag. Find a digest with:
 gh api /users/paquitopg/packages/container/wikidb/versions --jq '.[] | select(.metadata.container.tags | index("1.0.12")) | .name'
 ```
 
-SSPCloud runs the images directly with the Helm chart `k8s/wikidb`. Nubonyxia rebuilds both images FROM these
-digests plus the ministry CA in the private Forge project, which holds every RIE-specific file and its own deploy
-notes (KTD16).
+SSPCloud and Nubonyxia run the same images, by the same digests, with the same Helm chart `k8s/wikidb`. See
+[Nubonyxia](#nubonyxia) for the RIE.
 
 ## Prerequisites (SSPCloud)
 
@@ -84,3 +83,17 @@ does not downgrade extensions): restore the database ([restore.md](restore.md)) 
 Disable it with `--set export.enabled=false`; the wiki is unaffected. Official Word and PowerPoint templates, when
 supplied, go in a directory named by `WIKIDB_EXPORT_TEMPLATES` (`fiche.docx`, `fiche.pptx`); without it the export
 uses neutral built-in styles.
+
+## Nubonyxia
+
+The RIE layer lives in the private repository `paquitopg/wikidb-rie`, mirrored to a Forge project. That repository's
+README is the runbook: setup, release, first install, fallback. It holds every RIE host, the proxy and the Harbor
+project, which stay out of this repository. The design is in `openspec/changes/nubonyxia-deploy/design.md`.
+
+- **Images are copied, not rebuilt.** `release.sh` copies the digests running on SSPCloud from GHCR into Harbor with
+  `crane`, so the RIE runs exactly what was tested here.
+- **The chart is this one.** `release.sh` regenerates `helm/` from `k8s/wikidb` at a WikiDB commit and merges the RIE
+  values. The Forge pipeline's manual Deploy job installs it. The chart values `imageCredentials`, `appSecrets` and
+  `postgresql.keys` (see `k8s/wikidb/values.yaml`) exist for that job and stay off on SSPCloud.
+- **First install** runs from a Nubonyxia VSCode with `helm`, so the runner never holds `SUPERADMIN_PASSWORD`. The
+  pipeline takes over the release `wikidb` afterwards.

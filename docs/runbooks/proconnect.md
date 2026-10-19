@@ -6,7 +6,7 @@ platform has its own client:
 | Platform | ProConnect environment | Redirect URI |
 |---|---|---|
 | SSPCloud (dev) | Integration (`fca.integ01.dev-agentconnect.fr`) | `https://<dev host>/oidc/authenticator/callback` |
-| Nubonyxia (production) | Production, reached through the lab proxy | in the private Forge project |
+| Nubonyxia | Integration for now, production later, both reached through the lab proxy | in `paquitopg/wikidb-rie` |
 
 ## Current status (2026-10-16)
 
@@ -55,5 +55,18 @@ To tell an unknown client from other errors, send the same authorize request wit
   name the HR sync uses ([hr-feed.md](hr-feed.md)).
 - An agent absent from the HR listing signs in but sees nothing (AE9).
 
-On Nubonyxia, the JVM reaches ProConnect through the lab proxy with the `User-Agent` recorded by the feasibility
-probe (chart values `oidc.proxyHost`, `oidc.proxyPort`, `oidc.userAgent`).
+## Nubonyxia
+
+The RIE has no direct internet access, and ProConnect RIE does not accept calls from it yet. The Nubonyxia wiki
+therefore uses ProConnect Integration (Internet) for now, through the lab proxy. Its host, the proxy and the redirect
+URI are in the private repository `paquitopg/wikidb-rie`.
+
+- The JVM sends every outbound call through the proxy (chart values `oidc.proxyHost`, `oidc.proxyPort`). Calls to
+  `*.svc` go direct.
+- The proxy filters on `User-Agent`: Java's default is refused, `curl/8.5.0` passes (`oidc.userAgent`, measured on
+  2026-10-16).
+- A `403` after `CONNECT` comes from the proxy, not from ProConnect. Test from the pod, then write to
+  nubonyxia@finances.gouv.fr with the results.
+- The client ID and secret come from the Gitlab-runner's application secrets, mounted at `/secrets/app`. On the first
+  install they come from the hand-made `wikidb-app` Secret.
+- Production ProConnect will need its own client, registered as above.

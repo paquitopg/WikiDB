@@ -11,7 +11,7 @@ The wiki and export workloads on Nubonyxia SHALL run images whose digests equal 
 
 #### Scenario: Digests match after a release
 - **WHEN** a release for WikiDB commit `<c>` is deployed on Nubonyxia
-- **THEN** the running wiki and export containers report the same image digests as `ghcr.io/paquitopg/wikidb:sha-<c>` and `ghcr.io/paquitopg/wikidb-export:sha-<c>`
+- **THEN** the running wiki and export containers report the same image digests as the `wikidb` and `wikidb-export` releases running on SSPCloud, which `release.sh` recorded in the release commit
 
 #### Scenario: Forced tag is ignored
 - **WHEN** the platform's Deploy job passes `--set image.tag=<short SHA>`
