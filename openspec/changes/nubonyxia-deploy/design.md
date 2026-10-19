@@ -76,7 +76,7 @@ The Java version is that of the current image (Temurin 21.0.12.1). Java appends 
 *This amends KTD16 ("RIE files only in the private Forge project"):* the private GitHub repository is the source, so the layer can be edited from SSPCloud and is backed up. The chart is copied rather than referenced, because the runner cannot reach GitHub.
 
 **D4. `release.sh <wikidb commit>` is the only release step that touches images and the chart.** Run from a Nubonyxia VSCode, it does four things (the fixed `Dockerfile` of D1 is not touched):
-1. resolves the two digests on GHCR for `sha-<commit>`;
+1. takes the two digests that run on SSPCloud (`helm get values wikidb`) and checks they exist on GHCR. The image workflows are path-filtered, so most WikiDB commits have no `sha-<commit>` tag to resolve;
 2. runs `crane copy` for both and checks that each digest is unchanged in Harbor;
 3. replaces `helm/` with `git archive <commit> k8s/wikidb` from a WikiDB clone, sets `name: wikidb-chart`, and merges `values-rie.yaml` into `helm/values.yaml` with a real YAML merge;
 4. records the WikiDB commit and both digests in the commit message, and commits.
