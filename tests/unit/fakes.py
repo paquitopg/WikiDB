@@ -50,6 +50,11 @@ class FakeXWiki:
                 spaces.add(parts[:i])
         return sorted(spaces)
 
+    def list_pages(self, spaces):
+        # Like the REST listing, hidden pages (WebPreferences, groups) are left out.
+        return sorted(PageRef.parse(r).name for r, p in self.pages.items()
+                      if PageRef.parse(r).spaces == tuple(spaces) and not p.get("hidden"))
+
     def list_class_pages(self, class_name: str) -> list[str]:
         return sorted(ref for ref, by_class in self.objects.items() if by_class.get(class_name))
 
