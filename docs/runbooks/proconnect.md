@@ -10,8 +10,9 @@ platform has its own client:
 
 ## Current status (2026-10-16)
 
-ProConnect sign-in does not work yet on SSPCloud, nor on Nubonyxia (same `invalid_client`, 2026-10-20; the proxy path
-there is untested until a client is known). Until it does, only the local administrator account can sign in, at
+ProConnect sign-in does not work yet on SSPCloud. On Nubonyxia it works since 2026-10-20, sign-in and logout, through
+the lab proxy, with a client borrowed from another ministry application (obtained through the démarches numériques
+form) until WikiDB has its own. Until it does, only the local administrator account can sign in, at
 `https://<host>/bin/login/XWiki/XWikiLogin?oidc.skipped=true`.
 
 - **Done on the wiki side.** The client ID and secret are read from the `wikidb-app` Secret, and the authorize request
@@ -70,4 +71,8 @@ URI are in the private repository `paquitopg/wikidb-rie`.
   nubonyxia@finances.gouv.fr with the results.
 - The client ID and secret come from the Gitlab-runner's application secrets, mounted at `/secrets/app`. On the first
   install they come from the hand-made `wikidb-app` Secret.
+- Logout: register the wiki's root (`https://<host>/`) as a post-logout redirect URI on the client. The chart sets
+  `oidc.afterLogoutURL` to it; ProConnect does not require a `state` on logout.
+- A ProConnect `invalid_client` page means the server does not know the client: a `client_id` exists only on the
+  server where it was declared (Internet or RIE, Integration or production).
 - Production ProConnect will need its own client, registered as above.

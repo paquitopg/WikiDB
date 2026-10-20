@@ -41,9 +41,9 @@
 
 - [x] 6.1 Verify the running digests equal the digests recorded in the `wikidb-rie` release commit (`kubectl get pod -o jsonpath` on `imageID`)
 - [x] 6.2 Run `wikidb provision` from the Nubonyxia VSCode; verify it ends without errors
-- [ ] 6.3 Sign in once with a ProConnect Integration test account; verify the agent lands signed in. If it fails, capture the proxy's 403 and write to nubonyxia@finances.gouv.fr
+- [x] 6.3 Sign in once with a ProConnect Integration test account; verify the agent lands signed in. If it fails, capture the proxy's 403 and write to nubonyxia@finances.gouv.fr
 - [ ] 6.4 Run `pytest tests/acceptance --base-url https://<RIE host>`; verify it passes
-- [ ] 6.5 Check that export calls to `*.svc` bypass the proxy (an export of one sheet succeeds); verify a Word file downloads
+- [x] 6.5 Check that export calls to `*.svc` bypass the proxy (an export of one sheet succeeds); verify a Word file downloads
 
 ## 7. Documentation in WikiDB
 
