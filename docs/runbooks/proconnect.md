@@ -10,7 +10,8 @@ platform has its own client:
 
 ## Current status (2026-10-16)
 
-ProConnect sign-in does not work yet on SSPCloud. Until it does, only the local administrator account can sign in, at
+ProConnect sign-in does not work yet on SSPCloud, nor on Nubonyxia (same `invalid_client`, 2026-10-20; the proxy path
+there is untested until a client is known). Until it does, only the local administrator account can sign in, at
 `https://<host>/bin/login/XWiki/XWikiLogin?oidc.skipped=true`.
 
 - **Done on the wiki side.** The client ID and secret are read from the `wikidb-app` Secret, and the authorize request
