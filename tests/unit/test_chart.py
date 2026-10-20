@@ -25,7 +25,9 @@ def render(*args, sspcloud=True):
 
 
 def test_sspcloud_render_is_unchanged():
-    assert render() == SNAPSHOT.read_text()
+    # Helm 4 puts a blank line before each "---" and Helm 3 does not: compare without blank lines.
+    lines = lambda text: [line for line in text.splitlines() if line.strip()]
+    assert lines(render()) == lines(SNAPSHOT.read_text())
 
 
 def test_pull_secret_set():

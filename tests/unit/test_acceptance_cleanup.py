@@ -22,7 +22,8 @@ def test_removes_the_suite_leftovers_and_keeps_real_bureaux_and_members():
     apply(wiki, target_state(bureaux))
     wiki.put_page(cleanup.PageRef(("Mesures", "A", "Secteur"), "M-9001"), "test")
     wiki.put_page(cleanup.PageRef(("Mesures", "C6", "Secteur"), "M-0001"), "real")
-    for user in ("XWiki.test-agent-a", "XWiki.jean-dupont"):
+    # test-agent-real-finances-gouv-fr: a ProConnect user whose page happens to start like a test user's.
+    for user in ("XWiki.test-agent-a", "XWiki.jean-dupont", "XWiki.test-agent-real-finances-gouv-fr"):
         wiki.seed_object(user, "XWiki.XWikiUsers", {"active": "1"})
         wiki.seed_object("XWiki.GroupeDirection", GROUPS, {"member": user})
     wiki.seed_object("XWiki.GroupeA", GROUPS, {"member": "XWiki.test-agent-a"})
@@ -30,9 +31,11 @@ def test_removes_the_suite_leftovers_and_keeps_real_bureaux_and_members():
     memberships, registry, pages = cleanup.plan(wiki)
     cleanup.apply(wiki, memberships, registry, pages)
 
-    assert wiki.members("XWiki.GroupeDirection") == {"XWiki.jean-dupont"}
+    assert wiki.members("XWiki.GroupeDirection") == {"XWiki.jean-dupont", "XWiki.test-agent-real-finances-gouv-fr"}
     assert [o["code"] for o in wiki.objs("WikiDB.Bureaux", BUREAU_CLASS)] == ["C6"]
     left = set(wiki.pages)
-    assert not {p for p in left if ".A." in p or ".B." in p or ".S1." in p or "test-" in p}
+    assert not {p for p in left if ".A." in p or ".B." in p or ".S1." in p}
+    assert "XWiki.test-agent-a" not in left
     assert {"XWiki.GroupeA", "XWiki.GroupeS1"}.isdisjoint(left)
-    assert {"Mesures.C6.Secteur.M-0001", "XWiki.GroupeC6", "XWiki.jean-dupont", "Mesures.WebHome"} <= left
+    assert {"Mesures.C6.Secteur.M-0001", "XWiki.GroupeC6", "XWiki.jean-dupont", "Mesures.WebHome",
+            "XWiki.test-agent-real-finances-gouv-fr"} <= left

@@ -17,7 +17,9 @@ from wikidb.naming import bureau_group, group_reference  # noqa: E402
 from wikidb.provision import BUREAU_CLASS, GROUPS_CLASS, REGISTRY_PAGE  # noqa: E402
 
 BUREAUX = ("A", "B", "S1")
-TEST_USER_PREFIX = "XWiki.test-"  # every user of conftest.USERS
+# Exact names, not a prefix: a ProConnect user's page can start with "test-" too. conftest.py checks it matches USERS.
+TEST_USERS = frozenset(f"XWiki.{u}" for u in ("test-agent-a", "test-agent-a2", "test-agent-b", "test-agent-s1",
+                                               "test-agent-nobureau", "test-outsider"))
 USERS_CLASS = "XWiki.XWikiUsers"
 # Spaces provision creates per bureau, each followed by the bureau code.
 BUREAU_ROOTS = (("Mesures",), ("Bureaux",), ("Procedures",), ("Annuaire", "Bureaux"))
@@ -32,14 +34,14 @@ def plan(client, codes=BUREAUX):
             continue  # the whole group page goes
         page = PageRef.parse(ref)
         memberships += [(page, o.number, o.properties["member"]) for o in client.list_objects(page, GROUPS_CLASS)
-                        if o.properties.get("member", "").startswith(TEST_USER_PREFIX)]
+                        if o.properties.get("member", "").strip() in TEST_USERS]
     registry = [o for o in client.list_objects(REGISTRY_PAGE, BUREAU_CLASS) if o.properties.get("code", "").strip() in codes]
     roots = {root + (c,) for root in BUREAU_ROOTS for c in codes}
     spaces = [s for s in client.list_spaces() if any(s[:len(r)] == r for r in roots)]
     pages = [PageRef(s, n) for s in spaces for n in client.list_pages(s)]
     # The REST listing leaves out hidden pages; provision's only one there holds the space's rights.
     pages += [p for p in (PageRef(s, "WebPreferences") for s in spaces) if client.page_exists(p)]
-    pages += [PageRef.parse(r) for r in client.list_class_pages(USERS_CLASS) if r.startswith(TEST_USER_PREFIX)]
+    pages += [PageRef.parse(r) for r in client.list_class_pages(USERS_CLASS) if r in TEST_USERS]
     pages += [PageRef.parse(g) for g in sorted(groups) if client.page_exists(PageRef.parse(g))]
     return memberships, registry, pages
 

@@ -18,6 +18,9 @@ sys.path.insert(0, str(ROOT / "tools"))
 from wikidb.client import PageRef, XWikiClient, setting  # noqa: E402
 from wikidb.provision import set_group_members  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).parent))
+from cleanup import TEST_USERS  # noqa: E402
+
 # One marker word per sheet makes search assertions unambiguous.
 SHEETS = {
     "a_secteur": (("Mesures", "A", "Secteur"), "M-9001", "Mesure fictive A secteur zorglubA"),
@@ -33,6 +36,7 @@ USERS = {  # name -> groups
     "test-agent-nobureau": ["GroupeDirection"],
     "test-outsider": [],
 }
+assert {f"XWiki.{u}" for u in USERS} == TEST_USERS, "keep cleanup.TEST_USERS in step with USERS"
 
 
 def pytest_addoption(parser):
