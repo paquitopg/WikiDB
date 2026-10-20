@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 
-from wikidb.client import PageRef, XWikiClient  # noqa: E402
+from wikidb.client import PageRef, XWikiClient, XWikiError  # noqa: E402
 from wikidb.naming import bureau_group, group_reference  # noqa: E402
 from wikidb.provision import BUREAU_CLASS, GROUPS_CLASS, REGISTRY_PAGE  # noqa: E402
 
@@ -47,12 +47,18 @@ def plan(client, codes=BUREAUX):
 
 
 def apply(client, memberships, registry, pages):
+    """Remove everything it can; return the pages the wiki refused (a page locked by an edit answers 412)."""
     for page, number, _ in memberships:
         client.delete_object(page, GROUPS_CLASS, number)
     for obj in registry:
         client.delete_object(REGISTRY_PAGE, BUREAU_CLASS, obj.number)
+    refused = []
     for page in pages:
-        client.delete_page(page)
+        try:
+            client.delete_page(page)
+        except XWikiError as e:
+            refused.append((page, str(e)[:120]))
+    return refused
 
 
 def main(argv):
@@ -67,7 +73,12 @@ def main(argv):
     if "--apply" not in argv:
         print(f"dry run: {len(memberships) + len(registry) + len(pages)} items; rerun with --apply to remove them")
         return 0
-    apply(client, memberships, registry, pages)
+    refused = apply(client, memberships, registry, pages)
+    for page, error in refused:
+        print(f"NOT removed: {page}: {error}")
+    if refused:
+        print("rerun later: an edit lock lasts about 30 minutes")
+        return 1
     print("removed; now run wikidb provision")
     return 0
 

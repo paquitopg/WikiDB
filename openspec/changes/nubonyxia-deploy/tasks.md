@@ -2,7 +2,7 @@
 
 ## 1. Requests and Nubonyxia resources
 
-- [ ] 1.1 Email nubonyxia@finances.gouv.fr for the written hosting agreement and, optionally, a Harbor GHCR cache project; verify a written answer is filed (the whole change stops if hosting is refused)
+- [x] 1.1 Email nubonyxia@finances.gouv.fr for the written hosting agreement and, optionally, a Harbor GHCR cache project; verify a written answer is filed (the whole change stops if hosting is refused)
 - [x] 1.2 Choose the single-level hostname under the lab domain (`<RIE lab domain>`, in `wikidb-rie`), add its redirect URI to the ProConnect Integration client (or register a second client if one client refuses two URIs); verify the client lists the URI
 - [x] 1.3 Create the Harbor project (private) and a robot account limited to it; verify a push with the robot succeeds from a Nubonyxia VSCode (`crane auth login` alone checks nothing)
 - [x] 1.4 Create a discoverable PostgreSQL service; verify its `discoverable-postgresql-<id>` Secret holds `postgres-database`, `postgres-username` and `password`
@@ -42,7 +42,7 @@
 - [x] 6.1 Verify the running digests equal the digests recorded in the `wikidb-rie` release commit (`kubectl get pod -o jsonpath` on `imageID`)
 - [x] 6.2 Run `wikidb provision` from the Nubonyxia VSCode; verify it ends without errors
 - [x] 6.3 Sign in once with a ProConnect Integration test account; verify the agent lands signed in. If it fails, capture the proxy's 403 and write to nubonyxia@finances.gouv.fr
-- [ ] 6.4 Run `pytest tests/acceptance --base-url https://<RIE host>`; verify it passes
+- [x] 6.4 Run `pytest tests/acceptance --base-url https://<RIE host>`; verify it passes. Done on 2026-10-20 with `--export-url` set to the RIE host (the in-process export service does not work from a Nubonyxia VSCode); `test_guest_cannot_register_a_local_account` fails there on the lab proxy when following the ProConnect redirect, so its check (no account created) was run by hand. Then remove the leftovers with `tests/acceptance/cleanup.py`
 - [x] 6.5 Check that export calls to `*.svc` bypass the proxy (an export of one sheet succeeds); verify a Word file downloads
 
 ## 7. Documentation in WikiDB
