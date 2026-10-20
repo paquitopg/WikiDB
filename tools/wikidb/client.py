@@ -102,6 +102,12 @@ class XWikiClient:
             result.append(tuple(space["id"].split(":", 1)[1].split(".")))
         return result
 
+    def list_pages(self, spaces: tuple[str, ...]) -> list[str]:
+        """Names of the visible pages directly in a space (not in its nested spaces); hidden pages are left out."""
+        path = "".join(f"/spaces/{quote(s, safe='')}" for s in spaces)
+        r = self._check(self.session.get(f"{self.base}{path}/pages"), 200, 404)
+        return [] if r.status_code == 404 else [p["name"] for p in r.json().get("pageSummaries", [])]
+
     def list_class_pages(self, class_name: str) -> list[str]:
         """References of every page holding an object of `class_name` (e.g. all user profiles)."""
         refs: set[str] = set()
