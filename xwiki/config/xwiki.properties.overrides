@@ -19,6 +19,8 @@ oidc.tryLocal=true
 oidc.endpoint.discovery=${env:OIDC_DISCOVERY_URL}
 oidc.clientid=${env:OIDC_CLIENT_ID}
 oidc.secret=${env:OIDC_SECRET}
+# ProConnect only accepts a registered post-logout URI; without this XWiki sends the current page and its srid.
+oidc.afterLogoutURL=${env:OIDC_AFTER_LOGOUT_URL}
 oidc.scope=openid,email,given_name,usual_name
 oidc.userinfoclaims=email,given_name,usual_name
 oidc.user.mapping=first_name=${oidc.user.givenName},last_name=${oidc.user.usual_name}
