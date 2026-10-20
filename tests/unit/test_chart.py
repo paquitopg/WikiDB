@@ -70,3 +70,8 @@ def test_postgresql_discoverable_keys():
                   "--show-only", "templates/deployment.yaml", sspcloud=False)
     assert "name: DB_DATABASE\n              valueFrom: {secretKeyRef: {name: db-app, key: postgres-database}}" in wiki
     assert "key: postgres-username}" in wiki and "key: password}" in wiki
+
+
+def test_after_logout_url_is_the_wiki_root():
+    wiki = render("--show-only", "templates/deployment.yaml", sspcloud=False)
+    assert '{name: OIDC_AFTER_LOGOUT_URL, value: "https://wiki.example.org/"}' in wiki

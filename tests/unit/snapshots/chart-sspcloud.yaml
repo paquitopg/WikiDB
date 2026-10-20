@@ -90,6 +90,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom: {secretKeyRef: {name: postgresql-cnpg-955635-app, key: password}}
             - {name: OIDC_DISCOVERY_URL, value: "https://fca.integ01.dev-agentconnect.fr/api/v2/.well-known/openid-configuration"}
+            - {name: OIDC_AFTER_LOGOUT_URL, value: "https://wikidb-pgoze.user.lab.sspcloud.fr/"}
             - {name: JAVA_OPTS, value: "-Xmx2g"}
           volumeMounts:
             - {name: data, mountPath: /usr/local/xwiki}

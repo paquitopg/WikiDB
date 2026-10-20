@@ -49,7 +49,7 @@ The Java version is that of the current image (Temurin 21.0.12.1). Java appends 
   - Deploying the Kaniko-built image: its tag is the `wikidb-rie` short SHA, and its digest differs from what was tested.
   - Pulling GHCR from the build: not reachable, see Context.
   - Ask for a Harbor GHCR cache: requested, but not in our hands. Once it exists, only `image.repository` changes.
-- The root `Dockerfile` is a single `FROM busybox` line, pulled through Harbor's `docker_hub` mirror that Kaniko already uses. The Build job's image is never deployed, so it must be cheap: `FROM` the copied `wikidb` image would pull the whole XWiki image on every pipeline for nothing.
+- The root `Dockerfile` is a `FROM busybox` line plus `COPY helm/Chart.yaml /`, pulled through Harbor's `docker_hub` mirror that Kaniko already uses. The Build job's image is never deployed, so it must be cheap: `FROM` the copied `wikidb` image would pull the whole XWiki image on every pipeline for nothing.
 - *This amends KTD2*: Nubonyxia adds no ministry CA to the image. Every outbound call today goes to ProConnect Internet, which has a public certificate. When production moves to ProConnect RIE, whose certificate is likely signed by the ministry CA, the JVM gets a truststore mounted from a ConfigMap (`-Djavax.net.ssl.trustStore`). The image is still not rebuilt.
 
 **D2. Three additions to `k8s/wikidb`, all off by default.**
@@ -131,6 +131,6 @@ The merge is done here, not through `HELM_VALUES_OVERRIDE`, because the template
 ## Open Questions
 
 - The Nubonyxia ingress class and TLS setup: `kubectl get ingressclass`, and an existing Ingress in the namespace. This only fills a value.
-- The chart name under which `deliver-chart.sh` pushes: not read. `deploy-k8s.sh` expects `${APPLICATION_NAME}-chart`, which D4's renaming provides.
+- ~~The chart name under which `deliver-chart.sh` pushes~~: read on 2026-10-19, it pushes `<project>/<Chart.yaml name>`, so D4's renaming to `wikidb-chart` is what Deploy pulls. The same log shows that `package-chart.sh` falls back to the platform's default chart when `HELM_CHART_PATH` is missing, despite `HELM_CREATE_IF_MISSING=false`. The `COPY helm/Chart.yaml` line in the `Dockerfile` (D1) makes the Build fail instead.
 - Whether ProConnect Integration accepts two redirect URIs on one client: this decides one client or two, with no design change.
 - Whether `nonProxyHosts` needs the RIE domain (`<RIE domain>`): only if the wiki ever calls an RIE host.
