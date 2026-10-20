@@ -1,7 +1,9 @@
 """Acceptance fixtures: fictitious bureaux, users and sheets on a dev wiki (never production data, R20).
 
 Run: pytest tests/acceptance --base-url http://localhost:8085   (robot credentials from the environment or
-/secrets/app, see tools/wikidb/client.py). Provision bureaux A, B (sector) and S1 (synthesis) first.
+/secrets/app, see tools/wikidb/client.py). Register and provision these bureaux first (test_export checks
+the name): A "Bureau fictif A" and B "Bureau fictif B" (sectoriels), S1 "Bureau fictif de synthèse S1" (de synthèse).
+On a wiki that will hold real data, remove them afterwards with tests/acceptance/cleanup.py.
 """
 
 import secrets

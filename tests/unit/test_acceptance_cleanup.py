@@ -39,3 +39,20 @@ def test_removes_the_suite_leftovers_and_keeps_real_bureaux_and_members():
     assert {"XWiki.GroupeA", "XWiki.GroupeS1"}.isdisjoint(left)
     assert {"Mesures.C6.Secteur.M-0001", "XWiki.GroupeC6", "XWiki.jean-dupont", "Mesures.WebHome",
             "XWiki.test-agent-real-finances-gouv-fr"} <= left
+
+
+def test_a_refused_page_does_not_stop_the_others():
+    wiki = FakeXWiki()
+    for name in ("GroupeA", "GroupeB"):
+        wiki.seed_object(f"XWiki.{name}", GROUPS, {"member": ""})
+    delete = wiki.delete_page
+
+    def locked(page):
+        if page.name == "GroupeA":
+            raise cleanup.XWikiError("DELETE .../GroupeA: 412")
+        delete(page)
+
+    wiki.delete_page = locked
+    refused = cleanup.apply(wiki, *cleanup.plan(wiki, codes=("A", "B")))
+    assert [str(page) for page, _ in refused] == ["XWiki.GroupeA"]
+    assert "XWiki.GroupeB" not in wiki.pages
