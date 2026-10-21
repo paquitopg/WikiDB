@@ -30,6 +30,8 @@ cd xwiki && ./mvnw package                                          # build the 
 
 GitHub Actions builds and publishes the wiki and export images to GHCR when their sources change on `main` or `feat/**`.
 
+[What the wiki does](docs/capabilities.md): data model, rights, how to find information, extensions.
+
 ## Runbooks
 
 - [Deploy and upgrade](docs/runbooks/deploy.md)
