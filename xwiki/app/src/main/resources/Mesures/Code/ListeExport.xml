@@ -1,0 +1,115 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Mesures.Code.ListeExport" locale="">
+  <web>Mesures.Code</web>
+  <name>ListeExport</name>
+  <language/>
+  <defaultLanguage>fr</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Mesures.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Export tableur des fiches mesures</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{include reference="Mesures.Code.MesureMacros"/}}
+
+{{velocity wiki="false"}}
+## The measure list as a CSV file for Excel (UTF-8 with BOM, semicolons), with the filters of the Fiches mesures page:
+## /bin/get/Mesures/Code/ListeExport?bureau=A&amp;perimetre=Secteur. Only sheets the reader can view are listed.
+#mesureBureaux ($bureaux)
+#set ($bureau = "$!request.bureau")
+#if (!$bureaux.containsKey($bureau))
+  #set ($bureau = '')
+#end
+#set ($perimetre = "$!request.perimetre")
+#if (!$mesurePerimetres.containsKey($perimetre))
+  #set ($perimetre = '')
+#end
+## A filter left empty matches every bureau or perimeter.
+#set ($space = 'Mesures')
+#set ($filename = 'mesures')
+#foreach ($value in [$bureau, $perimetre])
+  #if ($value == '')
+    #set ($space = "${space}.%")
+  #else
+    #set ($space = "${space}.$value")
+    #set ($filename = "${filename}-$value.toLowerCase()")
+  #end
+#end
+#set ($mesureClass = $xwiki.getClass('Mesures.Code.MesureClass'))
+#set ($richText = ['raisonEtre', 'modalitesModification', 'documentationInterne', 'documentationExterne'])
+#set ($q = '"')
+#set ($eol = $escapetool.unurl('%0D%0A'))
+#set ($lines = [])
+## Quotes every cell. Excel runs a cell starting with = + - @ as a formula, so such cells get a leading apostrophe.
+#macro (csvRow $cells)
+  #set ($quoted = [])
+  #foreach ($cell in $cells)
+    #set ($cell = "$!cell")
+    #if ($cell.matches('(?s)^[=+@\t\r-].*'))
+      #set ($cell = "'$cell")
+    #end
+    #set ($cell = $cell.replace($q, "$q$q"))
+    #set ($discard = $quoted.add("$q$cell$q"))
+  #end
+  #set ($discard = $lines.add($stringtool.join($quoted, ';')))
+#end
+#set ($headers = ['Identifiant', 'Intitulé', 'Bureau', 'Intitulé du bureau', 'Périmètre'])
+#foreach ($field in ['cleSource', 'dateCreation', 'vecteurJuridique'])
+  #set ($discard = $headers.add($mesureClass.get($field).prettyName))
+#end
+#foreach ($field in $richText)
+  #set ($discard = $headers.add($mesureClass.get($field).prettyName))
+#end
+#set ($discard = $headers.addAll(['Provenances', 'Complète', 'Dernière modification', 'Modifiée par', 'Adresse']))
+#csvRow ($headers)
+#foreach ($fullName in $services.query.xwql("from doc.object(Mesures.Code.MesureClass) as m where doc.space like :space order by doc.space, doc.name").bindValue('space', $space).execute())
+  ## Rights are checked here: the query's 'viewable' filter drops every result on XWiki 17.10.
+  #set ($sheetRef = $services.model.resolveDocument($fullName))
+  #if ($services.security.authorization.hasAccess('view', $sheetRef))
+    #set ($sheetDoc = $xwiki.getDocument($sheetRef))
+    #set ($mesureObj = $sheetDoc.getObject('Mesures.Code.MesureClass'))
+    #mesurePlace ($sheetDoc $place)
+    #if ($mesureObj &amp;&amp; $place.bureau)
+      #set ($date = $mesureObj.getValue('dateCreation'))
+      #set ($row = [$sheetDoc.documentReference.name, $sheetDoc.plainTitle, $place.bureau,
+        "$!bureaux.get($place.bureau).name", $mesurePerimetres.get($place.perimetre),
+        "$!mesureObj.getValue('cleSource')", "#if ($date)$xwiki.formatDate($date, 'dd/MM/yyyy')#end",
+        "$!mesureObj.getValue('vecteurJuridique')"])
+      #foreach ($field in $richText)
+        ## Parsed and rendered without running macros, so nothing runs with this page's rights (R22).
+        #set ($text = "$!mesureObj.getValue($field)")
+        #set ($xdom = $services.rendering.parse($text, 'xwiki/2.1'))
+        #if ($xdom)
+          #set ($text = $services.rendering.render($xdom, 'plain/1.0'))
+        #end
+        #set ($discard = $row.add($text))
+      #end
+      #set ($provenances = [])
+      #foreach ($provenance in $sheetDoc.getObjects('Mesures.Code.ProvenanceClass'))
+        #set ($frequence = "$!provenance.getValue('frequence')")
+        #set ($discard = $provenances.add("$!provenance.getValue('donnee') : $!provenance.getValue('emetteur')#if ($frequence != ''), $frequence#end"))
+      #end
+      #mesureComplete ($sheetDoc $complete)
+      #set ($discard = $row.add($stringtool.join($provenances, $eol)))
+      #set ($discard = $row.add("#if ($complete)oui#{else}non#end"))
+      #set ($discard = $row.add($xwiki.formatDate($sheetDoc.date, 'dd/MM/yyyy HH:mm')))
+      #set ($discard = $row.add($xwiki.getPlainUserName($sheetDoc.authorReference)))
+      #set ($discard = $row.add($sheetDoc.getExternalURL('view')))
+      #csvRow ($row)
+    #end
+  #end
+#end
+## Written straight to the response, with a BOM so that Excel reads UTF-8: the rendering would reflow the lines.
+#set ($csv = "$escapetool.unurl('%EF%BB%BF')$stringtool.join($lines, $eol)$eol")
+#set ($discard = $response.setContentType('text/csv; charset=UTF-8'))
+#set ($discard = $response.setHeader('Content-Disposition', "attachment; filename=$q${filename}.csv$q"))
+#set ($discard = $response.outputStream.write($csv.getBytes('UTF-8')))
+#set ($discard = $xcontext.setFinished(true))
+{{/velocity}}</content>
+</xwikidoc>

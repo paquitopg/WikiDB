@@ -117,10 +117,11 @@ acceptance suite checks it (AE1 to AE10 in the [plan](plans/2026-10-14-1629-feat
 | Completeness | Bottom of **Fiches mesures**: complete sheets among those the reader can see. Direction-wide, per bureau and perimeter: `wikidb completeness` (administrator) |
 | Changes over time | Each sheet shows its last change and author; **Historique** keeps every version, with diff and restore |
 | A sheet as an Office file | **Exporter : Word \| PowerPoint** on the sheet; XWiki's own export menu also gives PDF, ODT and RTF |
+| The list in a spreadsheet | **Exporter la liste (tableur)** on **Fiches mesures**: a CSV file for Excel with the current bureau and perimeter filters and every field, rich text as plain text, provenances, completeness, last change and address; only sheets the reader can view. Address: `/bin/get/Mesures/Code/ListeExport?bureau=X&perimetre=Secteur` |
 | Procedures, glossary, directory | Filterable lists on their home pages |
 | Programmatic access | REST API (`/rest/wikis/xwiki/spaces/Mesures/spaces/X/...`), for administrator and robot accounts: agents sign in with ProConnect and have no password |
 
-Current limits: the bureau filter takes the code, not the name; the list has no spreadsheet export; exports cover one
+Current limits: the bureau filter takes the code, not the name; Office exports cover one
 sheet per file; rich-text fields are not list columns.
 
 ## 3. Extensions
@@ -136,7 +137,7 @@ can be installed from the administration: a new one goes through the repository,
 | `wikidb-oidc-authenticator` (OIDC authenticator 2.28.1, patched) | ProConnect sign-in, fixed post-logout address, local administrator login |
 | Diagram application 1.3.1 | draw.io diagrams in pages, offline |
 | `wikidb-dsfr` | DSFR skin and assets, offline |
-| `wikidb-app` | The applications above, the templates, the registry and the export data page |
+| `wikidb-app` | The applications above, the templates, the registry, the export data page and the list export |
 | Export service (`export/`, not an XWiki extension) | Word and PowerPoint export of one sheet, with the reader's own session and rights |
 
 ### 3.2 Candidates
@@ -145,7 +146,6 @@ Ordered by value against the requirements. Compatibility with 17.10 and offline 
 
 | Candidate | Brings | Cost or condition |
 |---|---|---|
-| Spreadsheet export of the measure list (our own page in `wikidb-app`) | The filtered list of a bureau's sheets as a file | Small; reuse the rights check of `Mesures.Code.ExportData` |
 | Change Request (xwiki-contrib) | Review and approval before a change is published, for champions | Check its interplay with location-based rights |
 | Publication Workflow (xwiki-contrib) | Draft, validated and published states | Overlaps with Change Request; choose one |
 | Email notifications | Watch a sheet and receive changes by email | An SMTP relay reachable from Nubonyxia |

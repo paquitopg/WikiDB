@@ -55,6 +55,7 @@ Une fiche par mesure : son historique, sa documentation et la provenance de ses 
   #end
   &lt;/select&gt;
   &lt;button type="submit" class="btn btn-default"&gt;Filtrer&lt;/button&gt;
+  &lt;a class="btn btn-default" href="$escapetool.xml($xwiki.getURL('Mesures.Code.ListeExport', 'get', $escapetool.url({'bureau': $bureau, 'perimetre': $perimetre})))"&gt;Exporter la liste (tableur)&lt;/a&gt;
 &lt;/form&gt;
 {{/html}}
 
@@ -83,11 +84,14 @@ Une fiche par mesure : son historique, sa documentation et la provenance de ses 
 ## `wikidb completeness`).
 #set ($total = 0)
 #set ($completes = 0)
-#foreach ($fullName in $services.query.xwql("from doc.object(Mesures.Code.MesureClass) as m where doc.space like 'Mesures.%'").addFilter('viewable').execute())
-  #set ($total = $total + 1)
-  #mesureComplete ($xwiki.getDocument($fullName) $complete)
-  #if ($complete)
-    #set ($completes = $completes + 1)
+#foreach ($fullName in $services.query.xwql("from doc.object(Mesures.Code.MesureClass) as m where doc.space like 'Mesures.%'").execute())
+  ## Rights are checked here: the query's 'viewable' filter drops every result on XWiki 17.10.
+  #if ($services.security.authorization.hasAccess('view', $services.model.resolveDocument($fullName)))
+    #set ($total = $total + 1)
+    #mesureComplete ($xwiki.getDocument($fullName) $complete)
+    #if ($complete)
+      #set ($completes = $completes + 1)
+    #end
   #end
 #end
 #if ($total &gt; 0)
